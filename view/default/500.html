@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  {{include './common/head.html'}}
+  
+<title>服务器错误 - {{site.name || 'ChanCMS'}}</title>
+
+  {{include './common/aigeo.html'}}
+    <link rel="canonical" href="http://{{site.domain}}/500.html">
+</head>
+<body class="app-bg text-slate-800 min-h-screen flex flex-col">
+  {{include './common/header.html'}}
+
+  <main class="flex-1 w-full">
+
+<section class="flex items-center justify-center py-12 md:py-16">
+  <div class="container mx-auto px-4 text-center">
+    <div class="w-28 h-28 mx-auto mb-6 rounded-full bg-danger/10 text-danger flex items-center justify-center">
+      <svg class="w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+    </div>
+    <h1 class="text-7xl font-bold text-slate-200 mb-2">500</h1>
+    <p class="text-xl font-bold text-slate-800 mb-2">服务器开小差了</p>
+    <p class="text-slate-500 mb-8">{{error || '系统暂时无法处理您的请求，请稍后再试'}}</p>
+    <a href="/" class="btn-gradient inline-flex items-center gap-2 px-6 py-3 rounded-full">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      返回首页
+    </a>
+  </div>
+</section>
+
+  </main>
+
+  {{include './common/footer.html'}}
+
+  {{include './common/side-toolbar.html'}}
+
+  {{include './common/js.html'}}
+
+</body>
+</html>

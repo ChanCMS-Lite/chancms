@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
+  <defs>
+    <linearGradient id="g11" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#g11)"/>
+  <circle cx="983.9999999999999" cy="148.5" r="189.00000000000003" fill="#ffffff" opacity="0.12"/>
+  <circle cx="216" cy="573.75" r="236.24999999999997" fill="#ffffff" opacity="0.08"/>
+  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+        font-family="PingFang SC,Microsoft YaHei,sans-serif"
+        font-size="108" font-weight="700" fill="#ffffff" opacity="0.95">BANNER 1</text>
+</svg>

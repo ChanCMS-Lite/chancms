@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  {{include './common/head.html'}}
+  
+<title>{{cate.name || '视频'}}-{{site.name}}</title>
+<meta name="keywords" content="{{cate.seoKeywords || site.keywords}}">
+<meta name="description" content="{{cate.seoDescription || site.description}}">
+<meta property="og:title" content="{{cate.name || '视频'}}-{{site.name}}">
+<meta property="og:description" content="{{site.description}}">
+
+  {{include './common/aigeo.html'}}
+    <link rel="canonical" href="http://{{site.domain}}{{cate.path}}/index.html">
+</head>
+<body class="app-bg text-slate-800 min-h-screen flex flex-col">
+  {{include './common/header.html'}}
+
+  <main class="flex-1 w-full">
+
+<section class="py-6">
+  <div class="container mx-auto px-4">
+    {{include './common/breadcrumb.html'}}
+
+    <!-- 频道标题区（参考 daily 视频频道） -->
+    <div class="glass mb-6">
+      <div class="px-6 py-5 border-b border-slate-100">
+        <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+          <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+          </svg>
+          {{cate.name || '视频频道'}}
+        </h1>
+        <p class="text-sm text-slate-500 mt-1">{{cate.seoDescription || '精选视频报道，直击现场'}}</p>
+      </div>
+      <div class="px-6 py-4">
+        <div class="flex flex-wrap gap-2">
+          <a href="#" class="btn-gradient px-4 py-2 text-sm">全部</a>
+          <a href="#" class="pill px-4 py-2 text-sm">时政</a>
+          <a href="#" class="pill px-4 py-2 text-sm">社会</a>
+          <a href="#" class="pill px-4 py-2 text-sm">科技</a>
+          <a href="#" class="pill px-4 py-2 text-sm">财经</a>
+          <a href="#" class="pill px-4 py-2 text-sm">文化</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <!-- 左侧主内容 -->
+      <div class="lg:col-span-8">
+        <div class="glass">
+          <div class="px-6 py-5 border-b border-slate-100">
+            <h2 class="card-title mb-0">视频列表</h2>
+          </div>
+          <div class="px-6 pb-6">
+            {{if list && list.length}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {{each list}}
+              <!-- 视频卡（16:9 封面 + 播放圆钮浮层 + 时长角标 + 摘要 + 播放量·日期） -->
+              {{set vurl = $value.ext_data.video_url || $value.link}}
+              {{set vcover = $value.ext_data.video_cover || $value.img}}
+              {{set d = $value.ext_data.duration}}
+              <a href="{{$value.path}}/article-{{$value.id}}.html" class="group block">
+                <div class="relative rounded-lg overflow-hidden mb-3">
+                  <img src="{{vcover || '/public/cover/default-video.jpg'}}" alt="{{$value.title}}" class="w-full aspect-video object-cover transition duration-300" loading="lazy">
+                  <div class="absolute inset-0 flex items-center justify-center video-overlay">
+                    <div class="w-11 h-11 bg-white/90 rounded-full flex items-center justify-center group-hover:scale-110 transition duration-300 shadow-md">
+                      <svg class="w-5 h-5 text-primary ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                  </div>
+                  {{if d}}
+                  <span class="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">{{if d >= 60}}{{(d - d % 60) / 60}}:{{if d % 60 < 10}}0{{/if}}{{d % 60}}{{else}}0:{{if d < 10}}0{{/if}}{{d}}{{/if}}</span>
+                  {{/if}}
+                  {{if $value.ext_data.quality}}
+                  <span class="absolute top-2 left-2 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">{{$value.ext_data.quality}}</span>
+                  {{/if}}
+                </div>
+                <h3 class="font-medium text-slate-900 group-hover:text-primary line-clamp-2">{{$value.title}}</h3>
+                {{if $value.description}}
+                <p class="text-sm text-slate-500 mt-1 line-clamp-1">{{$value.description}}</p>
+                {{/if}}
+                <div class="flex items-center gap-3 text-xs text-slate-400 mt-2">
+                  <span>{{$value.pv || 0}} 次播放</span>
+                  <span>{{ dateFormat($value.created_at, 'YYYY-MM-DD') }}</span>
+                </div>
+              </a>
+              {{/each}}
+            </div>
+
+            <div class="flex justify-center items-center gap-2 pt-6 border-t border-slate-100 mt-6">
+              {{@ pageHtml}}
+            </div>
+            {{else}}
+            <div class="text-center py-12">
+              <svg class="mx-auto mb-4" viewBox="0 0 64 41" width="96" height="62" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <g transform="translate(0 1)" fill="none" fill-rule="evenodd">
+                  <ellipse fill="#F5F5F5" cx="32" cy="33" rx="32" ry="7"></ellipse>
+                  <g fill-rule="nonzero" stroke="#D9D9D9">
+                    <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
+                    <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.93H55v12.069c0 1.253-.982 2.268-2.194 2.268H11.194C9.982 27.338 9 26.323 9 25.07V12.999h11.16c1.233 0 2.227 1.325 2.227 2.93 0 1.605 1.005 2.93 2.238 2.93h14.75c1.233 0 2.238-1.325 2.238-2.93z" fill="#FAFAFA"></path>
+                  </g>
+                </g>
+              </svg>
+              <p class="text-slate-400">暂无视频</p>
+            </div>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧边栏 -->
+      <aside class="lg:col-span-4 space-y-4">
+        <!-- 热门视频（与左侧主列表风格统一） -->
+        <div class="glass">
+          <div class="px-4 py-4 border-b border-slate-100">
+            <h3 class="card-title mb-0">热门视频</h3>
+          </div>
+          <div class="p-4 space-y-4">
+            {{if hot && hot.length > 0}}
+            {{each hot}}
+            {{if $index < 3}}
+            <a href="{{$value.path}}/article-{{$value.id}}.html" class="flex gap-3 group">
+              <div class="w-28 h-16 rounded-lg overflow-hidden flex-shrink-0 relative">
+                <img loading="lazy" src="{{$value.ext_data.video_cover || $value.img || '/public/cover/default-video.jpg'}}" alt="{{$value.title}}" class="w-full h-full object-cover transition duration-300">
+                <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+                  <div class="w-8 h-8 bg-white/60 backdrop-blur-[2px] rounded-full flex items-center justify-center shadow-sm">
+                    <svg class="w-4 h-4 text-primary ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  </div>
+                </div>
+                {{set hd = $value.ext_data.duration}}
+                {{if hd}}
+                <span class="absolute bottom-1 right-1 bg-black/80 text-white text-[10px] px-1.5 py-0.5 rounded">{{if hd >= 60}}{{(hd - hd % 60) / 60}}:{{if hd % 60 < 10}}0{{/if}}{{hd % 60}}{{else}}0:{{if hd < 10}}0{{/if}}{{hd}}{{/if}}</span>
+                {{/if}}
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm text-slate-800 group-hover:text-primary line-clamp-2">{{$value.title}}</div>
+                <div class="text-xs text-slate-400 mt-1">{{$value.pv || 0}} 次播放</div>
+              </div>
+            </a>
+            {{/if}}
+            {{/each}}
+            {{/if}}
+          </div>
+        </div>
+
+        {{if tag && tag.length}}
+        <section class="glass p-5">
+          <h3 class="card-title">热门标签</h3>
+          <p class="flex flex-wrap gap-2">
+            {{each tag}}
+            <a class="pill px-2.5 py-1 text-xs" href="/tags/{{$value.path}}/tag.html">{{$value.name}}</a>
+            {{/each}}
+          </p>
+        </section>
+        {{/if}}
+      </aside>
+    </div>
+  </div>
+</section>
+
+  </main>
+
+  {{include './common/footer.html'}}
+
+  {{include './common/side-toolbar.html'}}
+
+  {{include './common/js.html'}}
+
+</body>
+</html>

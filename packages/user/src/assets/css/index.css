@@ -1,0 +1,65 @@
+/* Tailwind v4：入口改为 @import（v3 的 @tailwind 三指令已废弃） */
+@import "tailwindcss";
+
+/* primary 色板：原 tailwind.config.js 的 theme.extend.colors 迁移而来。
+   v4 用 @theme 声明，--color-primary-500 会生成 bg-primary-500 / text-primary /
+   border-primary / hover:text-primary 等同名工具类，与 Element Plus 主色 #409eff 对齐。 */
+@theme {
+  --color-primary-50: #ecf5ff;
+  --color-primary-100: #d9ecff;
+  --color-primary-200: #c6e2ff;
+  --color-primary-300: #a0cfff;
+  --color-primary-400: #79bbff;
+  --color-primary-500: #409eff;
+  --color-primary-600: #337ecc;
+  --color-primary-700: #2b6cb0;
+  --color-primary-800: #254d8a;
+  --color-primary-900: #1d3a6b;
+  --color-primary-950: #15315c;
+}
+
+/* 全局样式变量 */
+:root {
+  --primary-color: #409eff;
+  --success-color: #67c23a;
+  --warning-color: #e6a23c;
+  --danger-color: #f56c6c;
+  --info-color: #909399;
+  --text-color: #303133;
+  --text-color-secondary: #606266;
+  --border-color: #dcdfe6;
+  --background-color: #f5f7fa;
+}
+
+/* 全局样式 */
+body {
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+
+/* Element Plus 样式覆盖 */
+.el-button--primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.el-pagination.is-background .el-pager li:not(.disabled).active {
+  background-color: var(--primary-color);
+}
+
+/* 过渡动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}

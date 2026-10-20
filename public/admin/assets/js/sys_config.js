@@ -1,0 +1,1 @@
+import{i as e,r as t}from"./index.js";var n=()=>e({url:`${t.BASE_API}/cms/sysApp/views`,method:`get`}),r=()=>e({url:`${t.BASE_API}/cms/sysApp/folder`,method:`get`});export{n,r as t};

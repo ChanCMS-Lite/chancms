@@ -1,0 +1,78 @@
+/* ============================================================
+   全局设计系统（统计页 / 首页共用）
+   ------------------------------------------------------------
+   目的：卡片、卡片标题、KPI 指标卡三类「版式原语」统一收敛到此，
+        跨页面共用同一套视觉语言，避免各页各写一份导致风格漂移。
+
+   用法：
+     卡片容器      class="panel"
+     卡片标题行    class="panel-hd"（内部：.hd-ic 图标 + 文本 + 可选 .hd-tip）
+     KPI 指标卡    class="panel kpi"
+                    └ .kpi-top（>.kpi-ic + .kpi-label）
+                    └ .kpi-value
+                    └ .kpi-sub
+     栅格行间距    class="mb-16"
+   ============================================================ */
+
+/* ---------- 卡片容器 ---------- */
+.panel {
+  background: #fff;
+  border-radius: 10px;
+  /* box-shadow: 0 1px 3px rgba(16, 24, 40, 0.06); */
+  padding: 16px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* ---------- 卡片标题行 ---------- */
+.panel-hd {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2d3d;
+  margin-bottom: 10px;
+}
+.hd-ic {
+  color: #2563eb;
+  flex: none;
+}
+.hd-tip {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 400;
+  color: #b6bcc8;
+}
+
+/* ---------- KPI 指标卡 ---------- */
+.kpi {
+  text-align: left;
+}
+.kpi-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #909399;
+  font-size: 12px;
+}
+.kpi-ic {
+  color: #2563eb;
+}
+.kpi-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2d3d;
+  margin: 8px 0 4px;
+  line-height: 1.2;
+}
+.kpi-sub {
+  font-size: 11px;
+  color: #c0c4cc;
+  height: 14px;
+}
+
+/* ---------- 栅格行间距 ---------- */
+.mb-16 {
+  margin-bottom: 16px;
+}

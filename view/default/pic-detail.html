@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  {{include './common/head.html'}}
+
+<title>{{article.title}}-{{site.name}}</title>
+<meta name="keywords" content="{{cate.seoKeywords || site.keywords}}">
+<meta name="description" content="{{cate.seoDescription || site.description}}">
+<meta property="og:title" content="{{article.title}}-{{cate.name}}-{{site.name}}">
+<meta property="og:description" content="{{cate.seoDescription || site.description}}">
+<link rel="stylesheet" href="{{static_url}}css/swiper-bundle.min.css">
+<!-- 分享海报与通用详情脚本（提前加载，避免按钮点击时函数未定义） -->
+{{include './common/share-poster.html'}}
+<style>
+  .gallery-main { cursor: zoom-in; }
+  /* 缩略图激活态：主色描边 + 轻微上浮 */
+  .gallery-thumb { cursor: pointer; transition: all 0.25s ease; border: 2px solid transparent; }
+  .gallery-thumb:hover { transform: translateY(-2px); }
+  .gallery-thumb.active { border-color: var(--tw-color-primary, #0ea5e9); }
+  /* 全屏查看器 */
+  #image-viewer { transition: opacity 0.2s ease; }
+  /* 查看器底部缩略条 */
+  .viewer-thumb { flex: 0 0 auto; width: 72px; height: 48px; object-fit: cover; border-radius: 6px; cursor: pointer; opacity: 0.45; border: 2px solid transparent; transition: all 0.2s ease; }
+  .viewer-thumb:hover { opacity: 0.8; }
+  .viewer-thumb.active { opacity: 1; border-color: #fff; }
+</style>
+
+  {{include './common/aigeo.html'}}
+    <link rel="canonical" href="http://{{site.domain}}{{cate.path}}/article-{{article.id}}.html">
+</head>
+<body class="app-bg text-slate-800 min-h-screen flex flex-col">
+  {{include './common/header.html'}}
+
+  <main class="flex-1 w-full">
+
+<section class="py-6">
+  <div class="container mx-auto px-4">
+    {{include './common/breadcrumb.html'}}
+    <!-- 主内容（全宽单栏，无右侧栏） -->
+    <div class="space-y-4">
+
+        {{set pics = article.ext_data.pics || []}}
+        {{set cover = article.img || (pics[0] && pics[0].url) || '/public/cover/default-pic.jpg'}}
+        <article class="glass p-5 sm:p-6" data-article-id="{{ article.id }}" data-fav-item="{{ article.id }}" data-type="picture" data-category-id="{{ cate.id || 0 }}" data-title="{{ article.title }}" data-cover="{{cover}}">
+          <div class="mb-3">{{include './common/favorite-button.html'}}</div>
+          <header class="pb-5 mb-6">
+            <h1 id="gallery-title" class="text-2xl sm:text-3xl font-bold text-slate-800 mb-4">{{article.title}}</h1>
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-500">
+              <span class="flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                共 <strong class="text-primary">{{pics.length}}</strong> 张照片
+              </span>
+              <span class="flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                {{ dateFormat(article.updated_at, 'YYYY-MM-DD') }}
+              </span>
+              {{if article.ext_data.photographer}}
+              <span class="flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                {{article.ext_data.photographer}}
+              </span>
+              {{/if}}
+              {{if article.ext_data.location}}
+              <span class="flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                {{article.ext_data.location}}
+              </span>
+              {{/if}}
+              {{if article.ext_data.shot_time}}
+              <span class="flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                摄于 {{dateFormat(article.ext_data.shot_time, 'YYYY-MM-DD')}}
+              </span>
+              {{/if}}
+              <span class="px-2 py-0.5 bg-emerald-100 text-emerald-600 rounded-full text-xs">{{cate.name}}</span>
+              <span class="flex items-center gap-1 ml-auto">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                {{article.pv || 0}} 次浏览
+              </span>
+            </div>
+            <!-- 操作按钮行已移除：分享用页面底部 share-bar，图片预览直接点击主图（cursor-zoom-in）打开全屏查看器 -->
+          </header>
+
+          <!-- 图片画廊：优先图集模型多图（ext_data.pics），无多图时回退封面单图 -->
+          {{if pics.length > 0}}
+          <div class="rounded-xl img-ph overflow-hidden">
+            <!-- Swiper 主轮播 -->
+            <div class="swiper gallery-swiper img-ph rounded-xl overflow-hidden relative">
+              <div class="swiper-wrapper">
+                {{each pics}}
+                <div class="swiper-slide" data-caption="{{$value.description || ''}}" data-src="{{$value.url || ''}}">
+                  <img loading="lazy" referrerpolicy="no-referrer" src="{{$value.url || ''}}" alt="{{$value.description || article.title}}" class="w-full h-[300px] sm:h-[400px] md:h-[520px] object-contain cursor-zoom-in" onclick="openImageViewer(gallerySwiper ? gallerySwiper.realIndex : {{$index}})">
+                </div>
+                {{/each}}
+              </div>
+              <!-- 计数徽章 -->
+              <div class="absolute top-3 right-3 z-10 px-2.5 py-1 bg-black/50 text-white text-xs rounded-full">{{pics.length}} 张</div>
+              <!-- 导航按钮 -->
+              <button class="swiper-prev-btn absolute left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/90 hover:bg-white rounded-full shadow-lg flex items-center justify-center text-slate-700 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+              </button>
+              <button class="swiper-next-btn absolute right-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/90 hover:bg-white rounded-full shadow-lg flex items-center justify-center text-slate-700 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+              </button>
+            </div>
+
+            <!-- 当前图片说明 -->
+            <div class="mt-4 text-center px-2">
+              <p id="photo-caption" class="text-slate-700 font-medium text-sm sm:text-base">{{pics[0].description || ''}}</p>
+            </div>
+
+            <!-- 缩略图 Swiper -->
+            <div class="mt-6 border-t border-slate-100 pt-4">
+              <div class="relative pl-10 pr-10">
+                <button class="thumb-prev-btn absolute left-2.5 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white shadow-lg rounded-full flex items-center justify-center text-slate-600 hover:text-primary transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+                <div class="swiper thumb-swiper px-1">
+                  <div class="swiper-wrapper">
+                    {{each pics}}
+                    <div class="swiper-slide gallery-thumb rounded-lg overflow-hidden">
+                      <img loading="lazy" referrerpolicy="no-referrer" src="{{$value.url || ''}}" alt="{{$value.description || article.title}}" class="w-full h-20 object-cover">
+                    </div>
+                    {{/each}}
+                  </div>
+                </div>
+                <button class="thumb-next-btn absolute right-2.5 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white shadow-lg rounded-full flex items-center justify-center text-slate-600 hover:text-primary transition">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          {{else if article.img}}
+          <!-- 单图回退：同样支持点击放大 -->
+          <div class="img-ph rounded-xl overflow-hidden cursor-zoom-in" onclick="openImageViewer(0)">
+            <img src="{{article.img}}" alt="{{article.title}}" class="w-full h-auto hover:opacity-95 transition" loading="lazy">
+          </div>
+          {{/if}}
+
+          {{if article.description}}
+          <section class="glass-soft p-4 mt-6 text-sm text-slate-600 leading-relaxed">
+            <span class="font-bold text-slate-700">「导读」</span>{{@ article.description}}
+          </section>
+          {{/if}}
+
+          <div id="articleBody" data-share-body class="rich-content text-slate-700 text-base leading-relaxed mt-6">
+            {{@ article.content}}
+          </div>
+
+          <div class="mt-8 pt-6 border-t border-slate-100">
+            {{set title = article.title}}
+            {{include './common/share-bar.html'}}
+          </div>
+        </article>
+
+        <!-- 上一篇/下一篇 -->
+        <nav class="glass p-5 space-y-3 text-sm">
+          <p class="flex items-center gap-2">
+            <span class="text-slate-400 flex-shrink-0">上一篇：</span>
+            {{if pre}}
+            <a href="{{pre.path}}/article-{{pre.id}}.html" class="text-slate-600 hover:text-primary transition line-clamp-1">{{pre.title}}</a>
+            {{else}}
+            <span class="text-slate-400">真的没有了</span>
+            {{/if}}
+          </p>
+          <p class="flex items-center gap-2">
+            <span class="text-slate-400 flex-shrink-0">下一篇：</span>
+            {{if next}}
+            <a href="{{next.path}}/article-{{next.id}}.html" class="text-slate-600 hover:text-primary transition line-clamp-1">{{next.title}}</a>
+            {{else}}
+            <span class="text-slate-400">真的没有了</span>
+            {{/if}}
+          </p>
+        </nav>
+
+        <!-- 相关图集（hot 由栏目配置提供） -->
+        {{if hot && hot.length > 0}}
+        <section class="glass overflow-hidden">
+          <div class="px-5 py-4 border-b border-slate-200/70 flex justify-between items-center">
+            <h3 class="card-title">
+              相关图集
+            </h3>
+            <a href="/pics/index.html" class="card-more">更多</a>
+          </div>
+          <div class="p-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {{each hot}}
+              {{if $index < 4}}
+              <a href="{{$value.path}}/article-{{$value.id}}.html" class="card-solid group block overflow-hidden">
+                <div class="relative h-44">
+                  <img loading="lazy" referrerpolicy="no-referrer" src="{{$value.img || '/public/cover/default-pic.jpg'}}" alt="{{$value.title}}" class="w-full h-full object-cover transition duration-300">
+                  <div class="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    {{($value.ext_data && $value.ext_data.pics && $value.ext_data.pics.length) || '?'}}张
+                  </div>
+                </div>
+                <div class="p-3">
+                  <h4 class="font-medium text-slate-800 group-hover:text-primary line-clamp-1 transition text-sm">{{$value.shortTitle || $value.title}}</h4>
+                  <p class="text-xs text-slate-400 mt-1">{{$value.name || '图集'}} · {{$value.pv || 0}}浏览</p>
+                </div>
+              </a>
+              {{/if}}
+              {{/each}}
+            </div>
+          </div>
+        </section>
+        {{/if}}
+
+        <section class="glass p-5 sm:p-6">
+          {{include './common/comment-section.html'}}
+        </section>
+      </div>
+  </div>
+</section>
+
+<!-- 全屏图片查看器：大图 + 底部缩略图切换条 -->
+<div id="image-viewer" class="fixed inset-0 z-50 hidden bg-black/95 backdrop-blur-sm">
+  <button onclick="closeImageViewer()" class="absolute top-4 right-4 z-50 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+  </button>
+  <div class="absolute top-4 left-1/2 -translate-x-1/2 z-50 text-white/80 text-sm">
+    <span id="viewer-current">1</span> / <span id="viewer-total">1</span>
+  </div>
+  <button onclick="viewerPrev()" class="absolute left-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+  </button>
+  <button onclick="viewerNext()" class="absolute right-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+  </button>
+  <div class="absolute inset-0 bottom-28 flex items-center justify-center p-4 sm:p-12">
+    <img id="viewer-image" src="" alt="" class="max-w-full max-h-full object-contain">
+  </div>
+  <!-- 底部：缩略图切换条 + 说明 -->
+  <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+    <div id="viewer-thumbs" class="flex gap-2 overflow-x-auto justify-start sm:justify-center pb-2 mb-2 px-1"></div>
+    <p id="viewer-caption" class="text-white text-center text-sm sm:text-base max-w-3xl mx-auto"></p>
+  </div>
+</div>
+
+  </main>
+
+  {{include './common/footer.html'}}
+
+  {{include './common/side-toolbar.html'}}
+
+  {{include './common/js.html'}}
+
+<script>
+  // 查看器数据源：多图取图集模型 ext_data.pics，单图回退封面（修复单图点击放大无效）
+  var viewerImages = [
+    {{if pics.length > 0}}
+    {{each pics}}{src: "{{@ $value.url || ''}}", caption: "{{$value.description || ''}}"}{{if $index < pics.length - 1}},{{/if}}{{/each}}
+    {{else}}
+    {src: "{{@ cover}}", caption: "{{article.title}}"}
+    {{/if}}
+  ];
+  var currentViewerIndex = 0;
+
+  // 初始化图集主轮播
+  {{if pics.length > 0}}
+  var gallerySwiper = new Swiper('.gallery-swiper', {
+    loop: true,
+    autoplay: {
+      delay: 5000,
+      disableOnInteraction: false,
+      pauseOnMouseEnter: true,
+    },
+    effect: 'slide',
+    speed: 500,
+    grabCursor: true,
+    keyboard: { enabled: true },
+    on: {
+      slideChange: function() {
+        var activeSlide = this.slides[this.activeIndex];
+        var caption = activeSlide.getAttribute('data-caption');
+        var el = document.getElementById('photo-caption');
+        if (el) el.textContent = caption || '';
+        if (thumbSwiper) { thumbSwiper.slideToLoop(this.realIndex); }
+        syncThumbActive(this.realIndex);
+      }
+    }
+  });
+
+  // 初始化缩略图轮播
+  var thumbSwiper = new Swiper('.thumb-swiper', {
+    slidesPerView: 3,
+    spaceBetween: 8,
+    freeMode: true,
+    watchSlidesProgress: true,
+    breakpoints: {
+      640:  { slidesPerView: 4, spaceBetween: 10 },
+      768:  { slidesPerView: 5, spaceBetween: 12 },
+      1024: { slidesPerView: 6, spaceBetween: 12 }
+    }
+  });
+
+  // 点击缩略图切换到对应主图
+  document.querySelectorAll('.thumb-swiper .swiper-slide').forEach(function(thumb, index) {
+    thumb.addEventListener('click', function() {
+      if (gallerySwiper) { gallerySwiper.slideToLoop(index); }
+    });
+  });
+
+  // 主图轮播自定义按钮
+  document.querySelector('.swiper-prev-btn').addEventListener('click', function() {
+    if (gallerySwiper) gallerySwiper.slidePrev();
+  });
+  document.querySelector('.swiper-next-btn').addEventListener('click', function() {
+    if (gallerySwiper) gallerySwiper.slideNext();
+  });
+
+  // 缩略图轮播自定义按钮
+  document.querySelector('.thumb-prev-btn').addEventListener('click', function() {
+    if (thumbSwiper) thumbSwiper.slidePrev();
+  });
+  document.querySelector('.thumb-next-btn').addEventListener('click', function() {
+    if (thumbSwiper) thumbSwiper.slideNext();
+  });
+
+  // 缩略图激活态同步（页脚缩略条与画廊缩略图共用）
+  function syncThumbActive(realIndex) {
+    document.querySelectorAll('.thumb-swiper .swiper-slide').forEach(function(el, i) {
+      el.classList.toggle('active', i === realIndex);
+    });
+    document.querySelectorAll('#viewer-thumbs .viewer-thumb').forEach(function(el, i) {
+      el.classList.toggle('active', i === realIndex);
+    });
+  }
+  syncThumbActive(0);
+  {{/if}}
+
+  function openImageViewer(index) {
+    if (!viewerImages.length) return;
+    currentViewerIndex = Math.min(Math.max(0, index), viewerImages.length - 1);
+    updateViewerImage();
+    document.getElementById('image-viewer').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeImageViewer() {
+    document.getElementById('image-viewer').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+  function updateViewerImage() {
+    var image = viewerImages[currentViewerIndex];
+    if (!image) return;
+    document.getElementById('viewer-image').src = image.src;
+    document.getElementById('viewer-caption').textContent = image.caption;
+    document.getElementById('viewer-current').textContent = currentViewerIndex + 1;
+    document.getElementById('viewer-total').textContent = viewerImages.length;
+    // 缩略条激活态滚动到可视区域
+    var thumbs = document.querySelectorAll('#viewer-thumbs .viewer-thumb');
+    thumbs.forEach(function(el, i) { el.classList.toggle('active', i === currentViewerIndex); });
+    var active = thumbs[currentViewerIndex];
+    if (active && active.scrollIntoView) active.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+    // 双向联动画廊主图
+    if (typeof gallerySwiper !== 'undefined' && gallerySwiper) gallerySwiper.slideToLoop(currentViewerIndex, 0);
+  }
+  function viewerPrev() {
+    currentViewerIndex = (currentViewerIndex - 1 + viewerImages.length) % viewerImages.length;
+    updateViewerImage();
+  }
+  function viewerNext() {
+    currentViewerIndex = (currentViewerIndex + 1) % viewerImages.length;
+    updateViewerImage();
+  }
+
+  // 构建查看器底部缩略图切换条
+  (function buildViewerThumbs() {
+    var wrap = document.getElementById('viewer-thumbs');
+    if (!wrap) return;
+    viewerImages.forEach(function(img, i) {
+      var t = document.createElement('img');
+      t.src = img.src;
+      t.alt = img.caption || ('第' + (i + 1) + '张');
+      t.className = 'viewer-thumb';
+      t.loading = 'lazy';
+      t.addEventListener('click', function() { currentViewerIndex = i; updateViewerImage(); });
+      wrap.appendChild(t);
+    });
+  })();
+
+  // 键盘控制
+  document.addEventListener('keydown', function(e) {
+    if (document.getElementById('image-viewer').classList.contains('hidden')) return;
+    if (e.key === 'Escape') closeImageViewer();
+    if (e.key === 'ArrowLeft') viewerPrev();
+    if (e.key === 'ArrowRight') viewerNext();
+  });
+
+  window.__posterData = {
+    title:    '{{article.title}}',
+    summary:  '{{article.description || ""}}',
+    cover:    '{{@ cover}}',
+    subTitle: '{{site.name}}'
+  };
+</script>
+
+</body>
+</html>

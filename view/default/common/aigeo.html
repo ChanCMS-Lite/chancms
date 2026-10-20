@@ -1,0 +1,6 @@
+{{set aigeo = (article && article.aigeo) || (typeof cate !== 'undefined' && cate && cate.aigeo) || (site && site.aigeo)}}
+{{if aigeo}}
+<script type="application/ld+json">
+<%- safeStringify(aigeo) %>
+</script>
+{{/if}}

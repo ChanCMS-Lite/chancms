@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  {{include './common/head.html'}}
+  
+<title>{{article.title}}-{{site.name}}</title>
+<meta name="keywords" content="{{cate.seoKeywords || site.keywords}}">
+<meta name="description" content="{{cate.seoDescription || site.description}}">
+<meta property="og:title" content="{{article.title}}-{{cate.name}}-{{site.name}}">
+<meta property="og:description" content="{{cate.seoDescription || site.description}}">
+<!-- 分享海报与通用详情脚本（提前加载，避免按钮点击时函数未定义） -->
+{{include './common/share-poster.html'}}
+
+  {{include './common/aigeo.html'}}
+    <link rel="canonical" href="http://{{site.domain}}{{cate.path}}/article-{{article.id}}.html">
+</head>
+<body class="app-bg text-slate-800 min-h-screen flex flex-col">
+  {{include './common/header.html'}}
+
+  <main class="flex-1 w-full">
+
+<section class="py-6">
+  <div class="container mx-auto px-4">
+    {{include './common/breadcrumb.html'}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- 主内容 -->
+      <div class="lg:col-span-2 space-y-4">
+
+        {{set videoUrl = article.ext_data.video_url || article.link}}
+        {{set videoCover = article.ext_data.video_cover || article.img}}
+        {{set dur = article.ext_data.duration}}
+        <article class="glass p-5 sm:p-6" data-article-id="{{ article.id }}" data-fav-item="{{ article.id }}" data-type="video" data-category-id="{{ cate.id || 0 }}" data-title="{{ article.title }}" data-cover="{{ videoCover || '' }}">
+          <div class="mb-3">{{include './common/favorite-button.html'}}</div>
+          <header class="border-b border-slate-100 pb-5 mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-4">{{article.title}}</h1>
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-500">
+              <span class="flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                {{ dateFormat(article.updated_at, 'YYYY-MM-DD') }}
+              </span>
+              <span class="flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                {{article.pv || 0}} 次播放
+              </span>
+              {{if dur}}
+              <span class="flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                {{if dur >= 60}}时长：{{(dur - dur % 60) / 60}}分{{dur % 60}}秒{{else}}时长：{{dur}}秒{{/if}}
+              </span>
+              {{/if}}
+              {{if article.ext_data.quality}}
+              <span class="px-2 py-0.5 bg-sky-100 text-sky-600 rounded-full text-xs">{{article.ext_data.quality}}</span>
+              {{/if}}
+              <span class="tag-primary px-2 py-0.5 text-xs">{{cate.name}}</span>
+            </div>
+          </header>
+
+          <!-- 视频播放器：优先视频模型 video_url 字段，回退外链 link；无地址时显示封面 + 提示 -->
+          <div class="relative rounded-xl overflow-hidden aspect-video bg-slate-900 mb-6">
+            {{if videoUrl}}
+            <video controls class="w-full h-full object-contain bg-black" src="{{videoUrl}}" poster="{{videoCover || ''}}"></video>
+            {{else if videoCover}}
+            <img src="{{videoCover}}" alt="{{article.title}}" class="w-full h-full object-cover" loading="lazy">
+            <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
+              <div class="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center">
+                <svg class="w-8 h-8 text-primary ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+              </div>
+            </div>
+            {{else}}
+            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900 text-slate-500 text-sm">请在后台为视频填写「视频地址」字段</div>
+            {{/if}}
+          </div>
+
+          {{if article.description}}
+          <section class="glass-soft p-4 mb-6 text-sm text-slate-600 leading-relaxed">
+            <span class="font-bold text-slate-700">「视频简介」</span>{{@ article.description}}
+          </section>
+          {{/if}}
+
+          <div id="articleBody" data-share-body class="rich-content text-slate-700 text-base leading-relaxed">
+            {{@ article.content}}
+          </div>
+
+          <div class="mt-8 pt-6 border-t border-slate-100">
+            {{set title = article.title}}
+            {{include './common/share-bar.html'}}
+          </div>
+        </article>
+
+        <!-- 上一篇/下一篇 -->
+        <nav class="glass p-5 space-y-3 text-sm">
+          <p class="flex items-center gap-2">
+            <span class="text-slate-400 flex-shrink-0">上一篇：</span>
+            {{if pre}}
+            <a href="{{pre.path}}/article-{{pre.id}}.html" class="text-slate-600 hover:text-primary transition line-clamp-1">{{pre.title}}</a>
+            {{else}}
+            <span class="text-slate-400">真的没有了</span>
+            {{/if}}
+          </p>
+          <p class="flex items-center gap-2">
+            <span class="text-slate-400 flex-shrink-0">下一篇：</span>
+            {{if next}}
+            <a href="{{next.path}}/article-{{next.id}}.html" class="text-slate-600 hover:text-primary transition line-clamp-1">{{next.title}}</a>
+            {{else}}
+            <span class="text-slate-400">真的没有了</span>
+            {{/if}}
+          </p>
+        </nav>
+
+        <section class="glass p-5 sm:p-6">
+          {{include './common/comment-section.html'}}
+        </section>
+      </div>
+
+      <!-- 侧边栏 -->
+      <aside class="space-y-4">
+        {{if news && news.length}}
+        <section class="glass p-5">
+          <h3 class="card-title">
+            {{cate.name}}最新
+            <a href="{{cate.path}}/index.html" class="card-more">更多</a>
+          </h3>
+          <ul class="space-y-2.5">
+            {{each news}}
+            <li class="text-sm">
+              <a href="{{$value.path}}/article-{{$value.id}}.html" title="{{$value.title}}" class="text-slate-700 hover:text-primary transition line-clamp-1">{{$value.title}}</a>
+            </li>
+            {{/each}}
+          </ul>
+        </section>
+        {{/if}}
+
+        {{if imgs && imgs.length}}
+        <section class="glass p-5">
+          <h3 class="card-title">{{cate.name}}推荐视频</h3>
+          <div class="space-y-4">
+            {{each imgs}}
+            <figure class="flex gap-3 pb-3 border-b border-slate-100 last:border-0 last:pb-0">
+              {{if $value.img}}
+              <div class="w-20 h-20 flex-shrink-0 rounded-lg img-ph overflow-hidden relative">
+                <img src="{{$value.img}}" alt="{{$value.title}}" class="w-full h-full object-cover" loading="lazy">
+                <span class="absolute inset-0 flex items-center justify-center"><svg class="w-6 h-6 text-white drop-shadow" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg></span>
+              </div>
+              {{/if}}
+              <div class="flex-1 min-w-0">
+                <figcaption class="text-sm font-bold text-slate-800 line-clamp-2 mb-1">{{$value.title}}</figcaption>
+                <p class="text-xs text-slate-500 line-clamp-3">
+                  <a href="{{$value.path}}/article-{{$value.id}}.html" title="{{$value.title}}" class="text-primary hover:underline">详情</a>
+                </p>
+              </div>
+            </figure>
+            {{/each}}
+          </div>
+        </section>
+        {{/if}}
+
+        {{if tag && tag.length}}
+        <section class="glass p-5">
+          <h3 class="card-title">tag标签</h3>
+          <p class="flex flex-wrap gap-2">
+            {{each tag}}
+            <a class="pill px-2.5 py-1 text-xs" href="/tags/{{$value.path}}/tag.html">{{$value.name}}</a>
+            {{/each}}
+          </p>
+        </section>
+        {{/if}}
+      </aside>
+    </div>
+  </div>
+</section>
+
+  </main>
+
+  {{include './common/footer.html'}}
+
+  {{include './common/side-toolbar.html'}}
+
+  {{include './common/js.html'}}
+
+<script>
+  window.__posterData = {
+    title:    '{{article.title}}',
+    summary:  '{{@ article.description || ""}}',
+    cover:    '{{@ article.ext_data.video_cover || article.img || ""}}',
+    subTitle: '{{site.name}}'
+  };
+</script>
+
+</body>
+</html>

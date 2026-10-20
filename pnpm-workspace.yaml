@@ -1,0 +1,42 @@
+# 后端 chancms 直接放在仓库根目录（自带 web 模板渲染 + public 静态托管，是宿主）。
+# admin / user 作为前端子包放在 packages/，构建产物分别落到根目录 public/admin 与 public/member。
+packages:
+  - "packages/*"
+
+# pnpm 10+ 默认不执行依赖的构建脚本，需显式放行（pnpm 12 起配置项名为 allowBuilds）：
+# esbuild（vite 依赖，不放行 vite 直接跑不起来）、bcrypt（后端 native）、core-js
+#
+# 🔴 cos-js-sdk-v5 必须显式写 false：它的 postinstall（scripts/patch-check.js）对本项目无用，
+#    但不写会被 pnpm 判为「未声明的构建脚本」直接抛 ERR_PNPM_IGNORED_BUILDS 中断 install。
+#    历史坑：此处曾遗留占位符文案 `set this to true or false`，导致任何触发 install 的操作
+#    （如改动 package.json）都会失败，且被 `| tail` 吞掉退出码后表现为「构建静默不执行」。
+allowBuilds:
+  bcrypt: true
+  esbuild: true
+  core-js: true
+  cos-js-sdk-v5: false
+  vue-demi: true
+
+# 统一版本口径：三端共享的依赖在此集中声明，子包用 "catalog:" 引用。
+# 改版本只改这一处，pnpm install 后三端同时生效（避免各包版本漂移）。
+# 说明：跨大版本（vue-router 5 / pinia 4 / vite 8 / echarts 6）未采用，
+# 统一停在各自当前大版本线的最新版。
+catalog:
+  vue: ^3.5.42
+  vue-router: ^4.6.4
+  pinia: ^3.0.4
+  element-plus: ^2.14.5
+  "@element-plus/icons-vue": ^2.3.2
+  axios: ^1.20.0
+  dayjs: ^1.11.23
+  vite: ^7.3.6
+  "@vitejs/plugin-vue": ^6.0.8
+  "@vitejs/plugin-legacy": ^7.2.1
+  tailwindcss: ^4.3.3
+  "@tailwindcss/postcss": ^4.3.3
+  unplugin-auto-import: ^21.1.0
+  unplugin-vue-components: ^32.1.0
+
+minimumReleaseAgeExclude:
+  - chanjs@2.8.4 || 2.8.5 || 2.8.6 || 2.8.10 || 2.8.11 || 2.8.12
+  - prettier@3.9.8

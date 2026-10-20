@@ -1,0 +1,385 @@
+
+:root {
+  --vt-c-white: #ffffff;
+  --vt-c-white-soft: #f8f8f8;
+  --vt-c-white-mute: #f2f2f2;
+
+  --vt-c-black: #181818;
+  --vt-c-black-soft: #222222;
+  --vt-c-black-mute: #282828;
+
+  --vt-c-indigo: #2c3e50;
+
+  --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
+  --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
+  --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
+  --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
+
+  --vt-c-text-light-1: var(--vt-c-indigo);
+  --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
+  --vt-c-text-dark-1: var(--vt-c-white);
+  --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+
+
+  /* base color */
+  --blue: #324157;
+  --light-blue: #3A71A8;
+  --red: #C03639;
+  --pink: #E65D6E;
+  --green: #30B08F;
+  --tiffany: #4AB7BD;
+  --yellow: #FEC171;
+  --panGreen: #30B08F;
+
+  /* sidebar */
+  --menuText: #bfcbd9;
+  --menuActiveText: #409EFF;
+  --subMenuActiveText: #f4f4f5;
+  --menuBg: #304156;
+  --menuHover: #263445;
+  --subMenuBg: #1f2d3d;
+  --subMenuHover: #001528;
+  --sideBarWidth: 200px;
+}
+
+/* semantic color variables for this project */
+:root {
+  --color-background: var(--vt-c-white);
+  --color-background-soft: var(--vt-c-white-soft);
+  --color-background-mute: var(--vt-c-white-mute);
+
+  --color-border: var(--vt-c-divider-light-2);
+  --color-border-hover: var(--vt-c-divider-light-1);
+
+  --color-heading: var(--vt-c-text-light-1);
+  --color-text: var(--vt-c-text-light-1);
+
+  /* 卡片悬浮阴影：统一投影（蓝调微光） */
+  --card-hover-shadow: 0 6px 20px rgba(58, 123, 247, 0.09);
+}
+
+
+
+body {
+  min-height: 100vh;
+  color: var(--color-text);
+  background: var(--color-background);
+  transition: color 0.5s, background-color 0.5s;
+  font-family: 'Helvetica Neue','PingFang SC', -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* 业务按钮统一 40px 高（Element Plus 默认尺寸为 32px，这里把 default size 提升到 40px） */
+.el-button {
+  --el-button-size: 40px;
+}
+
+.c-1d2129 {
+  color: #1d2129;
+}
+
+.c-a1a3aa {
+  color: #a1a3aa;
+}
+
+.bg-f6f6f6 {
+  background-color: #f3f3f3;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0 !important;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
+.w-200 {
+  width: 220px;
+}
+
+.w-280 {
+  width: 280px;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.h-full {
+  height: 100%;
+}
+
+.border-top-1 {
+  border-top: 1px solid var(--color-border);
+}
+
+.border-bottom-1 {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.text-16 {
+  font-size: 16px;
+}
+
+.text-18 {
+  font-size: 18px;
+}
+
+.h-vfull {
+  height: 100vh;
+}
+
+.w-vfull {
+  width: 100vw;
+}
+
+.gap-1 {
+  gap: var(--n-1);
+}
+
+.gap-2 {
+  gap: var(--n-2);
+}
+
+.gap-3 {
+  gap: var(--n-3);
+}
+
+.gap-4 {
+  gap: var(--n-4);
+}
+
+.gap-5 {
+  gap: var(--n-5);
+}
+
+.gap-10 {
+  gap: var(--n-10);
+}
+
+#nprogress .bar {
+  background: rgb(105, 184, 231, 0.5) !important;
+  height: 1px !important;
+}
+
+.el-popper.is-light,
+.el-popper.is-light>.el-popper__arrow:before {
+  border: 0;
+}
+.el-popper.is-light {
+  box-shadow:  0px 0px 5px #bcb5b5;
+}
+
+.drawer-modal .el-drawer__body{
+  padding: 0;
+}
+
+.search {
+  background-color: #f7f7f7;
+  border: 1px solid #f7f2f2;
+  border-radius: 5px;
+}
+
+/* ===== 全局缩略图上传组件（.avatar-uploader）：统一 32×32 虚线框 =====
+   ⚠️ 关键：Element Plus 把 <el-upload class="avatar-uploader"> 渲染为
+   <div class="avatar-uploader el-upload">，两个 class 在同个元素上。
+   必须用连写 .avatar-uploader.el-upload（同元素），不能用后代 .avatar-uploader .el-upload
+   （后代要求 .avatar-uploader 是父、.el-upload 是子，同元素永远匹配不到）。
+   另外：.avatar-uploader-icon 这个类被历史代码复用到了「列表缩略图」上，
+   因此所有 .avatar-uploader-icon 规则必须限定在上传组件内部，不能独立全局生效。 */
+.avatar-uploader.el-upload,
+.avatar-uploader .el-upload {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed #d9d9d9 !important;
+  border-radius: 4px;
+  background: #fafafa !important;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.avatar-uploader.el-upload:hover,
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff !important;
+  background: #f0f7ff !important;
+}
+
+/* 上传按钮内部的小图标：仅占满 32×32 上传区 */
+.avatar-uploader .avatar-uploader-icon {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #8c939d;
+  transition: color 0.2s ease;
+}
+
+.avatar-uploader .avatar-uploader-icon:hover {
+  color: #409eff;
+}
+
+/* 表单内已上传图片预览（历史代码复用了 .avatar-uploader-icon 类）：固定 60×60 缩略 */
+.el-image.avatar-uploader-icon {
+  width: 32px;
+ height: 32px;
+ object-fit: cover;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 表格/列表中的图片缩略图：统一 80×80，避免复用上传图标类导致尺寸失控 */
+.table-thumb {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+}
+
+/* 通用缩略图上传行：上传框 + 缩略图 + URL input 横向排列 */
+.thumb-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.thumb-input-row > .el-input {
+  flex: 1;
+}
+
+.tox-tinymce,
+.el-cascader,
+.el-select,
+.el-input,
+.el-select-v2 {
+  width: 100% !important;
+}
+
+.w-80 {
+  width: 80px !important;
+}
+
+.mce-preview-object {
+  display: block !important;
+}
+
+.page{
+  min-height: calc(100vh - 110px);
+}
+
+/* ===== 编辑页底部操作按钮：flex 布局固定底部（不用 fixed/sticky） ===== */
+/* 用法：外层容器加 .edit-page，可滚动内容区加 .edit-content，底部按钮容器加 .edit-footer */
+.edit-page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 110px);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.edit-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 10px 10px;
+  box-sizing: border-box;
+}
+.edit-footer {
+  flex-shrink: 0;
+  padding: 16px 0 0;
+  text-align: center;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* 修复分页「每页条数」选择框被全局 el-select 100% 宽度压扁 */
+.el-pagination__sizes .el-select {
+  width: auto !important;
+  min-width:110px;
+}
+
+/* ============================================================
+   栏目选择器「外域禁用」灰显补丁（markForeignDisabled 配套）
+   Element Plus 2.14.5 的两个缺口：禁用只拦点击、不灰显——
+   1. el-tree-node 从不渲染 is-disabled class，只有 aria-disabled 属性
+   2. el-cascader-node 在 checkStrictly 模式下父节点 expandable 恒为 true，
+      is-disabled 恒不挂（叶子节点正常灰）；但内部禁用的 radio/checkbox
+      会挂 is-disabled，用 :has() 钩住
+   ============================================================ */
+.el-tree-node[aria-disabled="true"] > .el-tree-node__content {
+  color: var(--el-text-color-placeholder);
+  cursor: not-allowed;
+}
+.el-cascader-node:has(.el-radio.is-disabled),
+.el-cascader-node:has(.el-checkbox.is-disabled) {
+  color: var(--el-text-color-placeholder);
+  cursor: not-allowed;
+}
+/* ============================================================
+   v-permission 权限不足提示气泡（directives/permission.js 配套）
+   —— 只作用于「提交类」按钮：无权限时置灰 + 悬停显示「当前角色暂无操作权限」
+   注意：被拦截的按钮刻意不设 disabled 属性（disabled 元素不派发 mouseenter，
+   提示会失效），故这里显式补上禁用观感，与 Element Plus 禁用态保持一致。
+   ============================================================ */
+.perm-tip {
+  position: fixed;
+  /* 🔴 必须高于 Element Plus 弹窗/抽屉：EP 的 PopupManager z-index 从 2000 起递增，
+     固定 3000 会被 el-dialog 遮住（提示气泡弹窗内看不见）。 */
+  z-index: 999999;
+  max-width: 260px;
+  padding: 6px 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #fff;
+  background: #303133;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.perm-tip.is-show {
+  opacity: 1;
+}
+.perm-tip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 0;
+  height: 0;
+  margin-left: -5px;
+  border: 5px solid transparent;
+}
+.perm-tip[data-placement='top']::after {
+  top: 100%;
+  border-top-color: #303133;
+}
+.perm-tip[data-placement='bottom']::after {
+  bottom: 100%;
+  border-bottom-color: #303133;
+}
+/* 指令置灰的按钮：观感与 EP 原生禁用一致（原生 disabled 会用同款变量） */
+.el-button.is-disabled[data-perm-blocked='1'],
+.el-button.is-disabled[data-perm-blocked='1']:hover,
+.el-button.is-disabled[data-perm-blocked='1']:focus {
+  color: var(--el-button-disabled-text-color, #a8abb2);
+  background-color: var(--el-button-disabled-bg-color, #fff);
+  border-color: var(--el-button-disabled-border-color, #e4e7ed);
+  cursor: not-allowed;
+}
+/* 非 el-button 形态的被拦截元素（如自定义右键菜单项）：悬停不做高亮，
+   避免"看着能点"。用 !important 压过组件内 scoped 的 :hover 样式
+   （如 vip/oss.vue 的 .menu-item.delete:hover { background:#fff1f0 }）。 */
+[data-perm-blocked='1']:not(.el-button):hover {
+  background-color: transparent !important;
+  cursor: not-allowed !important;
+}

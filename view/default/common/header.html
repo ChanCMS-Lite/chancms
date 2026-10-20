@@ -1,0 +1,171 @@
+<header class="site-header sticky top-0 z-40">
+  <div class="container mx-auto px-4">
+    <!-- 单行头部：Logo + 导航 + 搜索 + 登录注册 -->
+    <div class="flex items-center justify-between h-16 gap-6">
+      <!-- 左侧：Logo + PC 导航 -->
+      <div class="flex items-center gap-4 flex-1 min-w-0">
+        <!-- Logo -->
+        <a href="/" class="flex items-center gap-2 flex-shrink-0">
+          <img src="{{site.logo || '/favicon.png'}}" alt="{{site.name}}" class="h-8 w-auto object-contain rounded">
+          <span class="text-lg font-bold text-slate-800">{{site.name}}</span>
+        </a>
+
+        <!-- PC 导航（与 Logo 同行，无分隔线，md 以上显示） -->
+        <nav class="hidden md:flex items-center gap-1 min-w-0">
+          <ul id="pc-nav-links" class="flex items-center gap-1 list-none m-0 p-0 [&>li]:contents">
+            {{if nav && nav.length}}
+              {{each nav}}
+                <!-- 纯单页栏目（type=1、无独立地址、无子栏目）不进顶部导航：
+                     如「隐私政策/使用协议/联系方式」，它们只保留在页脚（footer.html 专收 type=1）。
+                     保留：首页、列表类栏目(type=0)、带独立地址的栏目(url，如专题/书籍)、有子栏目的栏目(如「关于」)。 -->
+                {{if $value.status == 0 && ($value.slug == 'home' || $value.url || $value.type == 0 || ($value.children && $value.children.length))}}
+                  {{if $value.slug == 'home'}}
+                    <li><a href="/" class="nav-item px-3 py-1.5 text-sm font-medium transition whitespace-nowrap {{if cate && cate.slug == $value.slug}}is-active{{/if}}">首页</a></li>
+                  {{else}}
+                    <li>
+                      {{if $value.url}}
+                        <a href="{{$value.url}}" {{if $value.target == 1}}target="_blank" rel="noopener noreferrer"{{/if}} class="nav-item px-3 py-1.5 text-sm font-medium transition whitespace-nowrap {{if (cate && cate.slug == $value.slug) || ($value.url == '/blog.html' && isBlog)}}is-active{{/if}}">{{$value.name}}</a>
+                      {{else}}
+                        {{if $value.type == 0}}
+                          <a href="{{$value.path}}/index.html" class="nav-item px-3 py-1.5 text-sm font-medium transition whitespace-nowrap {{if cate && cate.slug == $value.slug}}is-active{{/if}}">{{$value.name}}</a>
+                        {{else}}
+                          <a href="{{$value.path}}/page.html" class="nav-item px-3 py-1.5 text-sm font-medium transition whitespace-nowrap {{if cate && cate.slug == $value.slug}}is-active{{/if}}">{{$value.name}}</a>
+                        {{/if}}
+                      {{/if}}
+                    </li>
+                  {{/if}}
+                {{/if}}
+              {{/each}}
+            {{/if}}
+
+          </ul>
+        </nav>
+      </div>
+
+      <!-- 右侧：搜索 + 登录注册 + 移动端菜单 -->
+      <div class="flex items-center gap-3 flex-shrink-0">
+        <!-- 搜索框（PC 端显示）：flex 布局，按钮与输入框同流排布，任何 hover/缩放都不会跑偏；
+             可见输入框不带 name（浏览器无法关联历史填充，不再弹出搜索历史下拉），
+             提交瞬间由 JS 把值同步进隐藏的 name=keyword 输入框 -->
+        <form action="/search.html" method="get" data-search-form
+          class="hidden md:flex items-center w-48 xl:w-56 h-9 rounded-full pl-4 pr-1 field-flat focus-within:bg-white focus-within:ring-2 focus-within:ring-primary/30 transition">
+          <input type="text" data-search-input placeholder="搜索内容..." autocomplete="off"
+            class="flex-1 min-w-0 bg-transparent border-0 outline-none text-sm text-slate-700 placeholder-slate-400"
+            value="{{keywords || ''}}">
+          <input type="hidden" name="keyword">
+          <button type="submit" aria-label="搜索" title="搜索"
+            class="btn-gradient w-7 h-7 flex-shrink-0 flex items-center justify-center rounded-full">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+            </svg>
+          </button>
+        </form>
+
+        <!-- 登录注册 / 用户中心（仅 PC 显示，移动端走抽屉） -->
+        <div class="hidden md:flex items-center gap-2">
+          <!-- 未登录：显示登录/注册 -->
+          <div id="header-login-area" class="hidden items-center gap-2">
+            <a href="/public/member/index.html#/login" class="btn-gradient px-4 py-1.5 text-xs font-medium rounded-full">登录</a>
+            <a href="/public/member/index.html#/reg" class="btn-outline px-4 py-1.5 text-xs font-medium rounded-full">注册</a>
+          </div>
+
+          <!-- 已登录：字母头像 + 用户名，个人中心/退出收进下拉菜单 -->
+          <div id="header-user-area" class="hidden items-center gap-2 relative">
+            <button type="button" id="header-user-toggle"
+              class="flex items-center gap-2 text-xs font-medium text-slate-700 hover:text-primary transition"
+              aria-haspopup="true" aria-expanded="false">
+              <!-- 字母头像：用户名首字 + 圆形 + 品牌蓝底白字（替代默认人形图标），内容由下方 JS 填充 -->
+              <span id="header-avatar" class="user-avatar" aria-hidden="true"></span>
+              <span id="header-username" class="max-w-[100px] truncate"></span>
+              <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div id="header-user-menu"
+              class="hidden absolute right-0 top-full mt-2 w-36 bg-white rounded-xl shadow-lg ring-1 ring-slate-100 py-1 z-50">
+              <a href="/public/member/index.html#/index"
+                class="nav-item flex items-center gap-2 px-3 py-2 text-sm transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                个人中心
+              </a>
+              <a href="/member/v1/logout" id="header-logout-btn"
+                class="nav-item flex items-center gap-2 px-3 py-2 text-sm transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                退出登录
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 移动端菜单按钮 -->
+        <button type="button" data-open="mobile-nav" class="md:hidden p-2 text-slate-600 hover:text-primary hover:bg-slate-100 rounded-lg transition">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- 移动端抽屉导航 -->
+{{include './mobile-nav.html'}}
+
+<script>
+  // 站内搜索提交：可见输入框无 name（Chrome 无法关联历史填充，不再弹下拉），
+  // submit 瞬间把值同步进隐藏的 name=keyword，再交给 GET 提交
+  document.querySelectorAll('form[data-search-form]').forEach(function (form) {
+    form.addEventListener('submit', function () {
+      var val = form.querySelector('[data-search-input]').value.trim();
+      form.querySelector('input[name="keyword"]').value = val;
+    });
+  });
+
+  // 头部登录状态检测：ut 为登录态 token cookie（非 HttpOnly），前端可直接读取判断登录态
+  (function () {
+    function getCookie(name) {
+      return document.cookie.replace(
+        new RegExp('(?:(?:^|.*;\\s*)' + name + '\\s*\\=\\s*([^;]*).*$)|^.*$'),
+        '$1'
+      );
+    }
+    const isLoggedIn = !!getCookie('ut');
+    const un = getCookie('un');
+    const loginArea = document.getElementById('header-login-area');
+    const userArea = document.getElementById('header-user-area');
+    const usernameEl = document.getElementById('header-username');
+    if (isLoggedIn) {
+      if (userArea) {
+        userArea.classList.remove('hidden');
+        userArea.classList.add('flex');
+      }
+      // 字母头像：中文取首个字符、英文取首字母大写，无名时兜底 U
+      const name = un ? decodeURIComponent(un) : '';
+      if (usernameEl && name) usernameEl.textContent = name;
+      const avatarEl = document.getElementById('header-avatar');
+      if (avatarEl) {
+        const ch = Array.from(name)[0] || 'U';
+        avatarEl.textContent = /[a-zA-Z]/.test(ch) ? ch.toUpperCase() : ch;
+      }
+      // 用户区下拉菜单开合
+      const toggle = document.getElementById('header-user-toggle');
+      const menu = document.getElementById('header-user-menu');
+      if (toggle && menu) {
+        toggle.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const open = menu.classList.toggle('hidden');
+          toggle.setAttribute('aria-expanded', String(!open));
+        });
+        document.addEventListener('click', function (e) {
+          if (!menu.classList.contains('hidden') && !userArea.contains(e.target)) {
+            menu.classList.add('hidden');
+            toggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+    } else {
+      if (loginArea) {
+        loginArea.classList.remove('hidden');
+        loginArea.classList.add('flex');
+      }
+    }
+  })();
+</script>

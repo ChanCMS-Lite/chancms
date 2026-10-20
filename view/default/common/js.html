@@ -1,0 +1,19 @@
+<!-- 第三方库 -->
+<script src="{{static_url}}js/swiper-bundle.min.js"></script>
+
+<!-- 本站通用脚本 -->
+<script src="{{static_url}}js/common.js?v=3"></script>
+
+<!-- 初始化通用功能 -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.ChanApp) {
+      ChanApp.initMobileNav();
+      ChanApp.initChapterDrawer();
+      ChanApp.initBackTop();
+      ChanApp.initLazyLoad();
+      ChanApp.initSideToolbar();
+      ChanApp.initClearableFields();
+    }
+  });
+</script>

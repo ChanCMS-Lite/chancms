@@ -1,0 +1,130 @@
+<!--
+  右侧浮层 + 浮层弹窗（返回顶部 / 电话咨询 / 微信客服 / 在线留言）
+  - 结构布局放本组件，控制逻辑放 static/js/common.js 的 ChanApp.initSideToolbar()
+  - 微信二维码读 site.wx_qrcode；微信号读 site.wx；电话读 site.tel
+-->
+<style>
+  /* 返回顶部按钮：默认隐藏，滚动超过 300px 后由 common.js 的 initBackTop 添加 .visible 显示 */
+  .back-to-top {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity .3s ease, visibility .3s ease, transform .3s ease;
+  }
+  .back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+</style>
+
+<!-- ============ 右侧浮层 ============ -->
+<div id="side-toolbar" class="fixed right-3 sm:right-5 top-1/2 -translate-y-1/2 z-[60] flex flex-col items-center gap-3 select-none">
+
+  <!-- 返回顶部 -->
+  <button type="button" class="fab back-to-top w-12 h-12 flex items-center justify-center" aria-label="返回顶部" title="返回顶部">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+  </button>
+
+  <!-- 电话咨询 -->
+  <button type="button" data-action="phone" class="fab w-12 h-12 flex items-center justify-center" aria-label="电话咨询" title="电话咨询">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+  </button>
+
+  <!-- 微信客服 -->
+  <button type="button" data-action="wechat" class="fab w-12 h-12 flex items-center justify-center" aria-label="微信客服" title="微信客服">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+  </button>
+
+  <!-- 在线留言 -->
+  <button type="button" data-action="message" class="btn-gradient w-12 h-12 rounded-full flex items-center justify-center text-white" aria-label="在线留言" title="在线留言">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+  </button>
+
+</div>
+
+<!-- ============ 微信客服弹窗 ============ -->
+<div id="wechat-modal" class="modal-layer animate-fade-in fixed inset-0 z-[80] hidden" aria-hidden="true">
+  <div class="absolute inset-0 bg-black/50" onclick="ChanApp.closeModal('wechat')"></div>
+  <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[88vw] max-w-sm bg-white rounded-xl shadow-2xl p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-bold text-slate-800">微信客服</h3>
+      <button type="button" onclick="ChanApp.closeModal('wechat')" class="p-1 text-slate-400 hover:text-slate-600" aria-label="关闭">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="flex flex-col items-center">
+      {{if site.wx_qrcode}}
+      <div class="img-ph w-48 h-48 rounded-xl flex items-center justify-center overflow-hidden">
+        <img src="{{site.wx_qrcode}}" alt="微信二维码" class="w-full h-full object-contain">
+      </div>
+      <p class="text-sm text-slate-500 mt-3">扫码添加微信客服</p>
+      {{else}}
+      <p class="text-sm text-slate-400 py-10 text-center">后台尚未配置微信二维码，<br>请到「系统设置 - 网站信息」填写 wx_qrcode</p>
+      {{/if}}
+      {{if site.wx}}
+      <p class="text-sm text-slate-700 mt-2">微信号：<span class="font-medium">{{site.wx}}</span></p>
+      {{/if}}
+    </div>
+  </div>
+</div>
+
+<!-- ============ 电话咨询弹窗 ============ -->
+<div id="phone-modal" class="modal-layer animate-fade-in fixed inset-0 z-[80] hidden" aria-hidden="true">
+  <div class="absolute inset-0 bg-black/50" onclick="ChanApp.closeModal('phone')"></div>
+  <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[88vw] max-w-sm bg-white rounded-xl shadow-2xl p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-bold text-slate-800">电话咨询</h3>
+      <button type="button" onclick="ChanApp.closeModal('phone')" class="p-1 text-slate-400 hover:text-slate-600" aria-label="关闭">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <p class="text-sm text-slate-500 mb-4">工作日 8:30-18:00 竭诚为您服务</p>
+    {{if site.tel}}
+    <div class="bg-primary-50 rounded-xl p-4 text-center mb-4">
+      <p class="text-xs text-slate-400 mb-1">联系电话</p>
+      <p class="text-xl font-bold text-primary">{{site.tel}}</p>
+    </div>
+    <a href="tel:{{site.tel}}" class="btn-gradient block w-full py-3 text-center font-medium">立即拨打</a>
+    {{else}}
+    <p class="text-sm text-slate-400 py-6 text-center">后台尚未配置联系电话，<br>请到「系统设置 - 网站信息」填写 tel</p>
+    {{/if}}
+  </div>
+</div>
+
+<!-- ============ 在线留言弹窗 ============ -->
+<div id="message-modal" class="modal-layer animate-fade-in fixed inset-0 z-[80] hidden" aria-hidden="true">
+  <div class="absolute inset-0 bg-black/50" onclick="ChanApp.closeModal('message')"></div>
+  <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[92vw] max-w-md bg-white rounded-xl shadow-2xl p-6 max-h-[88vh] overflow-y-auto">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="text-lg font-bold text-slate-800">在线留言</h3>
+      <button type="button" onclick="ChanApp.closeModal('message')" class="p-1 text-slate-400 hover:text-slate-600" aria-label="关闭">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <p class="text-sm text-slate-500 mb-4">请填写您的需求信息，我们将在 24 小时内与您联系。</p>
+    <form id="message-form" class="space-y-3">
+      <div>
+        <label class="block text-sm text-slate-600 mb-1">姓名 <span class="text-red-500">*</span></label>
+        <input name="name" type="text" placeholder="请输入您的姓名" class="field w-full px-3 py-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-sm text-slate-600 mb-1">公司名称</label>
+        <input name="company" type="text" placeholder="请输入公司名称" class="field w-full px-3 py-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-sm text-slate-600 mb-1">联系手机号 <span class="text-red-500">*</span></label>
+        <input name="tel" type="text" placeholder="请输入11位手机号" class="field w-full px-3 py-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-sm text-slate-600 mb-1">电子邮箱 <span class="text-red-500">*</span></label>
+        <input name="email" type="text" placeholder="请输入电子邮箱" class="field w-full px-3 py-2 text-sm">
+      </div>
+      <div>
+        <label class="block text-sm text-slate-600 mb-1">需求描述 <span class="text-red-500">*</span></label>
+        <textarea name="content" rows="3" placeholder="请简要描述您的需求" class="field w-full px-3 py-2 text-sm resize-none"></textarea>
+      </div>
+      <button type="submit" class="btn-gradient w-full py-3 font-medium">提交留言</button>
+    </form>
+  </div>
+</div>

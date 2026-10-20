@@ -1,0 +1,51 @@
+<div class="sidebar-block">
+  <h3 class="sidebar-title">最新文章</h3>
+  <ul class="sidebar-list">
+    {{each sidebar.latest l}}
+    <li><a href="/blog/{{l.slug}}.html">{{l.title}}</a></li>
+    {{/each}}
+  </ul>
+</div>
+
+<div class="sidebar-block">
+  <h3 class="sidebar-title">热门文章</h3>
+  <ul class="sidebar-list">
+    {{each sidebar.hot h}}
+    <li><a href="/blog/{{h.slug}}.html">{{h.title}}</a></li>
+    {{/each}}
+  </ul>
+</div>
+
+<div class="sidebar-block">
+  <h3 class="sidebar-title">分类</h3>
+  <ul class="sidebar-list">
+    {{each sidebar.categories c}}
+    <li><a href="/blog/category/{{c.slug}}.html">{{c.name}} <em>({{c.post_count}})</em></a></li>
+    {{/each}}
+  </ul>
+</div>
+
+<div class="sidebar-block">
+  <h3 class="sidebar-title">标签云</h3>
+  <div class="tag-cloud">
+    {{each sidebar.tags t}}
+    <a href="/blog/tag/{{t.slug}}.html" class="blog-tag">#{{t.name}}</a>
+    {{/each}}
+  </div>
+</div>
+
+<div class="sidebar-block">
+  <h3 class="sidebar-title">归档</h3>
+  <ul class="sidebar-list">
+    {{each archives a}}
+    <li>
+      <a href="/blog/archive/{{a.year}}.html">{{a.year}}</a>
+      <ul>
+        {{each a.months m}}
+        <li><a href="/blog/archive/{{a.year}}/{{m.month}}.html">{{m.month}}月 <em>({{m.total}})</em></a></li>
+        {{/each}}
+      </ul>
+    </li>
+    {{/each}}
+  </ul>
+</div>

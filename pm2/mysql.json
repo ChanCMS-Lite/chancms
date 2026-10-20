@@ -1,0 +1,28 @@
+{
+    "apps": [
+        {
+            "name": "chancms-default",
+            "script": "app.js",
+            "watch": false,
+            "ignore_watch": [
+                "public",
+                "logs",
+                "node_modules"
+            ],
+            "log_date_format": "YYYY-MM-DD HH:mm Z",
+            "error_file": "./logs/pm2-err.log",
+            "out_file": "./logs/pm2-out.log",
+            "merge_logs": true,
+            "exec_mode": "fork",
+            "max_memory_restart": "220M",
+            "autorestart": true,
+            "instances": 1,
+            "env": {
+                "NODE_ENV": "prd",
+                "ENV_FILE": "env/mysql.prd",
+                "DB_TYPE": "mysql",
+                "LOG_LEVEL": "info"
+            }
+        }
+    ]
+}

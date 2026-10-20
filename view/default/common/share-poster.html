@@ -1,0 +1,57 @@
+<!-- 分享海报隐藏DOM + 预览弹窗（照搬 daily，依赖 qrcode + snapdom + detail-common.js） -->
+
+<!-- 隐藏的海报DOM -->
+<div id="sharePoster" style="width:375px;padding:28px;background:#fafafa;position:absolute;left:-9999px;top:-9999px;z-index:-1;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;box-sizing:border-box;">
+  <div style="background:#fff;border-radius:12px;padding:24px;box-sizing:border-box;">
+    <h2 id="posterTitle" style="font-size:23px;font-weight:700;color:#1e293b;line-height:1.4;margin:0 0 18px 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;"></h2>
+    <p id="posterSummary" style="font-size:15px;color:#475569;line-height:1.7;margin:0 0 20px 0;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;"></p>
+    <img id="posterCover" src="/public/cover/02.jpg" style="width:100%;height:180px;object-fit:cover;border-radius:10px;display:block;margin-bottom:14px;background:#f1f5f9;" />
+    <div style="font-size:12px;color:#94a3b8;">来源：{{site.name}}</div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;padding:14px 16px;background:#fff;border-radius:12px;box-sizing:border-box;">
+    <div style="display:flex;align-items:center;gap:12px;min-width:0;">
+      <div style="min-width:0;">
+        <div style="display:flex;align-items:center;gap:4px;">
+          <a href="/" target="_blank" style="flex-shrink:0;">
+            <img src="{{site.logo || '/favicon.png'}}" alt="{{site.name}}" style="width:100px;object-fit:cover;background:#fff;display:block;">
+          </a>
+        </div>
+        <div id="posterSubTitle" style="font-size:12px;color:#64748b;margin-top:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-clamp:2;"></div>
+      </div>
+    </div>
+    <div style="text-align:center;flex-shrink:0;margin-left:12px;">
+      <img id="posterQrcode" crossorigin="anonymous" src="" style="display:block;width:64px;height:64px;border-radius:6px;background:#fff;" />
+      <div style="font-size:10px;color:#94a3b8;margin-top:3px;">扫码阅读</div>
+    </div>
+  </div>
+</div>
+
+<!-- 海报预览弹窗 -->
+<div id="posterPreviewMask" class="fixed inset-0 bg-black/80 z-[60] flex flex-col items-center justify-center p-5" style="display:none;" onclick="closePosterPreview()">
+  <div class="relative max-w-full" onclick="event.stopPropagation()">
+    <img id="previewImg" class="max-w-full max-h-[70vh] rounded-xl shadow-2xl" src="" alt="分享海报" />
+    <p class="text-white text-center text-sm mt-4 leading-relaxed">长按图片保存到相册<br>朋友圈请从相册上传图片</p>
+    <div class="text-center mt-4">
+      <button onclick="closePosterPreview()" class="w-10 h-10 bg-white/20 backdrop-blur-md text-white rounded-full flex items-center justify-center hover:bg-white/30 transition mx-auto">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 第三方依赖 -->
+<script src="{{static_url}}js/qrcode.min.js"></script>
+<script src="{{static_url}}js/snapdom.js"></script>
+
+<!-- 海报入口占位：detail-common.js 加载成功后会覆盖为真实实现 -->
+<script>
+  (function(){
+    window.showToast = window.showToast || function(msg){ if(msg) alert(msg); };
+    window.openPosterPreview = window.openPosterPreview || function(){
+      window.showToast && window.showToast('海报组件加载中，请稍候再试');
+    };
+  })();
+</script>
+
+<!-- 详情页通用脚本 -->
+<script src="{{static_url}}js/detail-common.js"></script>

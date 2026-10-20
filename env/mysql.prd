@@ -1,0 +1,48 @@
+# 运行环境（必须为 prd：触发弱口令/JWT 强密钥检查、cookie sameSite=strict 等）
+NODE_ENV=prd
+
+# 数据库
+DB_USER=root
+DB_PASS=
+# 上一行必填：生产数据库口令（部署方填写）；JWT_SECRET 已在打包时随机生成
+DB_DATABASE=chancms_lite
+DB_TYPE=mysql
+DB_HOST=localhost
+DB_PORT=3306
+DB_POOL_MIN=3
+DB_POOL_MAX=8
+
+# 站点
+PORT=3000
+BODY_LIMIT=500kb
+CORS_ORIGIN=*
+
+# JWT（强随机密钥，已在本打包中随机生成，生产环境仍可再次轮换）
+JWT_SECRET=4wbyKssiqUjmS658MnNxV_bE58XvP6inVS6Wah-fJWwtm4V9ocpzrZYID11OgJbp
+JWT_EXPIRES_IN=1d
+JWT_REFRESH=false
+
+# Cookie 安全属性（控制登录态 token cookie 的 Secure 标志）
+# Secure 标记的 cookie 仅允许经 HTTPS 传输；HTTP 部署必须设为 false，否则浏览器不会发送该 cookie 导致无法登录
+COOKIE_SECURE=true
+
+# bcrypt 用于密码哈希，后台与会员共用
+BCRYPT_SALT=12
+
+# Redis 缓存，默认不开启
+REDIS_ENABLED=false
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+REDIS_PASSWORD=
+REDIS_DB=0
+
+# 缓存-是否开启模板缓存
+CACHE=true
+
+# 日志级别：debug info
+LOG_LEVEL=info
+
+# 分页
+PAGE_SIZE=20
+LIMIT_MAX=300
+PAGE_SIZE_MAX=100

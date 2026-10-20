@@ -1,0 +1,550 @@
+<!--
+  公共 head（default 模板统一入口）：
+  theme-color / favicon / og 基础 / tailwind CDN + 全局配置 / 设计 token + 公共样式
+  页面专属 title / keywords / description / og:title / og:description 由各页自行书写
+-->
+<meta name="theme-color" content="#2563eb">
+<link rel="icon" href="{{site.favicon || '/favicon.ico'}}">
+<meta property="og:image" content="{{ogImage || site.logo || ''}}">
+<meta property="og:type" content="website">
+<script src="{{static_url}}js/tailwindcss.js"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: '#2563eb',
+          'primary-50': '#eff6ff',
+          'primary-100': '#dbeafe',
+          'primary-200': '#bfdbfe',
+          'primary-600': '#1d4ed8',
+          'primary-700': '#1e40af',
+          secondary: '#64748b',
+          success: '#10b981',
+          warning: '#f59e0b',
+          danger: '#ef4444',
+        },
+        boxShadow: {
+          'soft': '0 1px 2px rgba(15, 23, 42, 0.04)',
+          'card': '0 1px 3px rgba(15, 23, 42, 0.06)',
+        },
+        animation: {
+          'fade-in': 'fadeIn 0.4s ease-out',
+          'slide-up': 'slideUp 0.5s cubic-bezier(.2,.8,.2,1)',
+        },
+        keyframes: {
+          fadeIn: {
+            '0%': { opacity: '0' },
+            '100%': { opacity: '1' },
+          },
+          slideUp: {
+            '0%': { opacity: '0', transform: 'translateY(14px)' },
+            '100%': { opacity: '1', transform: 'translateY(0)' },
+          },
+        },
+      }
+    }
+  }
+</script>
+<style>
+  /* ==========================================================================
+     设计 token（全站统一视觉基线，改这里即全站生效）
+     风格：干净扁平 —— 纯色底 + 白卡描边 + 10px 圆角 + 微阴影，
+           主色 Ant 蓝纯色（无渐变），hover 只变色不位移，克制精致
+     ========================================================================== */
+  :root {
+    --brand: #2563eb;
+    --brand-600: #1d4ed8;
+    --brand-700: #1e40af;
+    --brand-500: #3b82f6;
+    --brand-50: #eff6ff;
+    --brand-100: #dbeafe;
+    --ring: rgba(37, 99, 235, 0.14);
+    --line: #e8edf3;
+    --line-strong: #cbd5e1;
+    --ink: #0f172a;
+    --ink-2: #334155;
+    --ink-3: #64748b;
+    --ink-4: #94a3b8;
+    /* 圆角：卡片 12px（向官网 rounded-xl 看齐），小控件 8px */
+    --radius-card: 12px;
+    --radius-sm: 8px;
+    /* 阴影：分层的柔和阴影，hover 时抬升一档（不位移，遵守「去夸张动效」） */
+    --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.03);
+    --shadow-hover: 0 8px 24px -8px rgba(37, 99, 235, 0.18), 0 2px 8px rgba(15, 23, 42, 0.06);
+    --shadow-btn: 0 4px 14px -4px rgba(37, 99, 235, 0.45);
+  }
+
+  /* 页面底色：极浅的冷灰白，比纯白更托得住白卡 */
+  .app-bg { background: #f7f9fc; }
+
+  /* 主卡片：白卡 + 1px 浅描边 + 分层柔阴影（对齐官网 rounded-xl 观感） */
+  .glass {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* 列表内的实体卡（外层已是白卡容器时用，靠描边深浅分层） */
+  .card-solid {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .card-solid:hover {
+    border-color: rgba(37, 99, 235, 0.35);
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* 次级容器：浅灰底，用于说明/提示/空态 */
+  .glass-soft {
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+  }
+
+  /* 可交互卡片：hover 只提边框与阴影，不位移（老板要求：去夸张动效） */
+  .glass-hover { transition: border-color 0.2s, box-shadow 0.2s; }
+  .glass-hover:hover {
+    border-color: rgba(37, 99, 235, 0.35);
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* 顶部导航：近实白吸顶 + 细底边，保留极轻模糊提升层次（现代站标配） */
+  .site-header {
+    background: rgba(255, 255, 255, 0.95);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* 主按钮：品牌蓝纯色 + 蓝色光晕投影（对齐官网主按钮），hover 加深不变位 */
+  .btn-gradient {
+    background: var(--brand);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-btn);
+    transition: background-color 0.2s, box-shadow 0.2s;
+  }
+  .btn-gradient:hover { background: var(--brand-600); box-shadow: 0 6px 18px -4px rgba(37, 99, 235, 0.55); }
+  .btn-gradient:active { background: var(--brand-700); }
+
+  /* 描边按钮：白底细边，悬停浅蓝底 */
+  .btn-outline {
+    background: #fff;
+    color: var(--brand);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+  }
+  .btn-outline:hover {
+    background: var(--brand-50);
+    border-color: var(--brand);
+  }
+
+  /* 轻量按钮：白底，用于上一页/下一页/筛选等次要操作 */
+  .btn-soft {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    color: var(--ink-3);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+    transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
+  }
+  .btn-soft:hover {
+    border-color: rgba(37, 99, 235, 0.35);
+    color: var(--brand);
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* 悬浮圆钮：侧边工具栏 / 返回顶部（统一正圆，与蓝色留言主按钮同形） */
+  .fab {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 9999px;
+    color: #64748b;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    transition: color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .fab:hover {
+    color: var(--brand);
+    border-color: rgba(37, 99, 235, 0.35);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+  }
+
+  /* 列表/侧栏导航项：选中 = 浅蓝纯色底 + 纯色左条（去渐变） */
+  .nav-item {
+    position: relative;
+    border-radius: 8px;
+    color: #475569;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  .nav-item:hover { background: rgba(15, 23, 42, 0.045); color: var(--brand); }
+  .nav-item.is-active {
+    background: var(--brand-50);
+    color: var(--brand);
+    font-weight: 600;
+  }
+  .nav-item.is-active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 1.05rem;
+    border-radius: 0 3px 3px 0;
+    background: var(--brand);
+  }
+  /* 子层级导航：更浅的选中底，不重复左侧色条 */
+  .nav-item-sub { border-radius: 8px; color: #64748b; }
+  .nav-item-sub.is-active { background: var(--brand-50); font-weight: 500; }
+  .nav-item-sub.is-active::before { display: none; }
+
+  /* 顶部横向导航：选中态浅蓝胶囊底 */
+  #pc-nav-links .nav-item.is-active {
+    background: var(--brand-50);
+    box-shadow: none;
+  }
+  #pc-nav-links .nav-item.is-active::before { display: none; }
+
+  /* 胶囊分类（书籍分类等横向 chips） */
+  .chip {
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid var(--line);
+    color: #475569;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  }
+  .chip:hover { color: var(--brand); border-color: rgba(37, 99, 235, 0.35); }
+  .chip.is-active {
+    background: var(--brand-50);
+    border-color: rgba(37, 99, 235, 0.35);
+    color: var(--brand);
+    font-weight: 600;
+  }
+
+  /* 关键词/属性标签：浅灰药丸，悬停染浅蓝 */
+  .pill {
+    border-radius: 9999px;
+    background: #f1f5f9;
+    color: #475569;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  .pill:hover {
+    background: var(--brand-50);
+    color: var(--brand);
+  }
+
+  /* 品牌浅色标签 */
+  .tag-primary {
+    border-radius: 9999px;
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--brand);
+    font-weight: 500;
+  }
+
+  /* 实心徽标（价格/角标）：纯色，去模糊去大投影 */
+  .badge-gradient {
+    border-radius: 9999px;
+    background: var(--brand);
+    color: #fff;
+  }
+  .price-badge {
+    border-radius: 9999px;
+    background: var(--brand);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  /* 卡片标题：左侧纯色短条（替代整行下划线）
+     ⚠️ 标题文字在模板里是「裸文本节点」，flex 容器里它也是一个 flex item。
+     若配合 Tailwind 的 justify-between（3 个 item：竖条 + 文本 + 尾部元素），
+     space-between 会把中间的文本推到正中间 → 标题居中、看着像排版坏了。
+     故此处固定 flex-start，并用 :last-child 把尾部元素（更多/new/HOT）推到最右；
+     模板里**不要再给 .card-title 加 justify-between**。 */
+  .card-title {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.9rem;
+  }
+  .card-title > :last-child { margin-left: auto; }
+
+  /* 卡片标题右侧「尾部元素」统一样式（同一位置只允许这两种形态）
+     —— 避免出现「蓝色裸文字 / 灰色裸文字 / 红色裸文字」各写各的、风格不统一：
+        · 可点击 → .card-more  品牌浅底药丸 + CSS 箭头，悬停加深
+        · 纯标签 → .card-meta  中性浅底药丸；需要红色强调用 .card-meta-hot
+     两者字号/字重/内边距/圆角完全一致，只靠底色区分语义。 */
+  .card-more,
+  .card-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1;
+    padding: 0.32rem 0.6rem;
+    border-radius: 9999px;
+    white-space: nowrap;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  .card-more { color: var(--brand); background: rgba(37, 99, 235, 0.1); }
+  .card-more::after {
+    content: '';
+    width: 0.3rem;
+    height: 0.3rem;
+    border-top: 1.5px solid currentColor;
+    border-right: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 0.2s;
+  }
+  .card-more:hover { background: rgba(37, 99, 235, 0.18); }
+  .card-more:hover::after { transform: rotate(45deg) translateX(1px); }
+  .card-meta { color: #64748b; background: rgba(100, 116, 139, 0.1); }
+  .card-meta-hot { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+  /* 卡片标题左侧短条：纯色细条，只作视觉锚点不抢视觉 */
+  .card-title::before {
+    content: '';
+    width: 3px;
+    height: 0.85rem;
+    border-radius: 9999px;
+    background: var(--brand);
+    flex-shrink: 0;
+  }
+
+  /* 区块标题左侧短条（首页等） */
+  .accent-bar { background: var(--brand); }
+
+  /* 图片占位：纯浅灰底 */
+  .img-ph { background: #f1f5f9; }
+
+  /* 表单控件：白底描边 + 聚焦光环 */
+  .field {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .field:focus {
+    border-color: rgba(37, 99, 235, 0.55);
+    box-shadow: 0 0 0 3px var(--ring);
+    outline: none;
+  }
+  .field::placeholder { color: #94a3b8; }
+
+  /* 输入框内「清空」按钮：有内容时出现。
+     用法：<div class="relative"><input class="field field-clearable" data-clearable> <button class="field-clear"></button></div>
+     逻辑见 static/js/common.js#initClearableFields */
+  .field-clearable { padding-right: 2.25rem; }
+  .field-clear {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 9999px;
+    color: #94a3b8;
+    transition: color 0.2s, background-color 0.2s;
+  }
+  .field-clear.is-on { display: inline-flex; }
+  .field-clear:hover { color: #0f172a; background: rgba(148, 163, 184, 0.18); }
+  .field-clear svg { width: 0.875rem; height: 0.875rem; }
+
+  /* 顶部搜索框：无边框浅灰胶囊，聚焦白底光环 */
+  .field-flat {
+    background: #f1f5f9;
+    border: 1px solid transparent;
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  }
+  .field-flat:focus {
+    outline: none;
+    background: #fff;
+    border-color: rgba(37, 99, 235, 0.35);
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  .field-flat::placeholder { color: #94a3b8; }
+
+  /* ============ 弹窗动效（side-toolbar / 咨询弹窗共用） ============
+     结构约定：<div id="xxx-modal" class="modal-layer animate-fade-in hidden"> + 卡片
+     开关逻辑见 static/js/common.js#ChanApp.openModal/closeModal；
+     动效 = 遮罩+卡片整体在屏幕中间直接淡入，无位移 */
+  .animate-fade-in { animation: fadeIn .18s ease both; }
+  /* 关闭中：容器快速淡出，结束后由 JS 置 hidden */
+  .modal-layer.is-closing { animation: fadeOut .15s ease both; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+  /* 面包屑 */
+  .crumb { color: #64748b; transition: color 0.2s; }
+  .crumb a:hover { color: var(--brand); }
+
+  /* 分页（pageHtml 由服务端拼接，这里统一渲染外观） */
+  .page-html { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+  .page-html a, .page-html span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    padding: 0 0.6rem;
+    font-size: 0.875rem;
+    color: #475569;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+  }
+  .page-html a:hover {
+    color: var(--brand);
+    border-color: rgba(37, 99, 235, 0.4);
+  }
+  .page-html .current, .page-html a.active {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #fff;
+  }
+  .page-html .disabled { opacity: 0.45; }
+
+  /* 用户字母头像：用户名首字 + 圆形 + 品牌蓝底白字（替代默认人形图标） */
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--brand);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    user-select: none;
+  }
+
+  /* 通用工具类 */
+  .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+  .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  /* 骨架屏 */
+  .skeleton { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  /* 富文本基础样式：正文可读性优先（行高 1.9、层级清晰、链接可辨） */
+  .rich-content { color: var(--ink-2); font-size: 1rem; line-height: 1.9; }
+  .rich-content > *:first-child { margin-top: 0; }
+  .rich-content p { margin: 0 0 1.15em; }
+  .rich-content img { max-width: 100%; height: auto; border-radius: var(--radius-sm); margin: 1.2em 0; }
+  .rich-content h2 { font-size: 1.4rem; font-weight: 700; color: var(--ink); margin: 1.8em 0 .8em; line-height: 1.4; }
+  .rich-content h3 { font-size: 1.15rem; font-weight: 600; color: var(--ink); margin: 1.5em 0 .6em; line-height: 1.5; }
+  .rich-content h4 { font-size: 1rem; font-weight: 600; color: var(--ink); margin: 1.3em 0 .5em; }
+  .rich-content ul, .rich-content ol { padding-left: 1.5em; margin: 0 0 1.1em; }
+  .rich-content li { margin-bottom: .35em; }
+  .rich-content a { color: var(--brand); text-decoration: underline; text-underline-offset: 2px; }
+  .rich-content a:hover { color: var(--brand-600); }
+  .rich-content blockquote {
+    margin: 1.3em 0; padding: .2em 0 .2em 1.1em;
+    border-left: 3px solid var(--brand); color: var(--ink-3); font-style: italic;
+  }
+  .rich-content pre {
+    background: #f8fafc; border: 1px solid var(--line);
+    padding: 1rem 1.1rem; border-radius: var(--radius-sm);
+    overflow-x: auto; font-size: .875rem; line-height: 1.7;
+  }
+  .rich-content code {
+    background: #f1f5f9; padding: .15em .4em; border-radius: 4px; font-size: .9em;
+  }
+  .rich-content pre code { background: none; padding: 0; }
+  .rich-content table { border-collapse: collapse; width: 100%; margin: 1.3em 0; font-size: .9375rem; }
+  .rich-content th, .rich-content td { border: 1px solid var(--line); padding: .6rem .8rem; }
+  .rich-content th { background: #f8fafc; font-weight: 600; color: var(--ink); }
+  .rich-content hr { border: 0; border-top: 1px solid var(--line); margin: 2em 0; }
+
+  /* ============ 博客侧栏（与卡片设计系统同源） ============ */
+  .sidebar-block { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-card); padding: 1rem 1.1rem; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04); }
+  .sidebar-title { display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.75rem; }
+  .sidebar-title::before { content: ''; width: 3px; height: 0.85rem; border-radius: 9999px; background: var(--brand); flex-shrink: 0; }
+  .sidebar-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+  .sidebar-list li > a, .sidebar-list > a { display: block; padding: 0.4rem 0.5rem; border-radius: 8px; color: #475569; font-size: 0.875rem; transition: background-color 0.2s, color 0.2s; }
+  .sidebar-list li > a:hover, .sidebar-list > a:hover { background: rgba(15, 23, 42, 0.045); color: var(--brand); }
+  .sidebar-list em { font-style: normal; color: #94a3b8; font-size: 0.75rem; }
+  .sidebar-list ul { list-style: none; margin: 0.1rem 0 0; padding-left: 0.75rem; }
+  .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .blog-tag { border-radius: 9999px; background: rgba(37, 99, 235, 0.1); color: var(--brand); font-size: 0.75rem; font-weight: 500; padding: 0.3rem 0.7rem; transition: background-color 0.2s; }
+  .blog-tag:hover { background: rgba(37, 99, 235, 0.18); }
+  /* 博客正文排版（复用富文本基线） */
+  .blog-detail-content { margin-top: 1rem; }
+
+  /* ==========================================================================
+     全站体验增强（2026-09 全量优化）
+     只增不改已有类名，老模板零改造即可受益
+     ========================================================================== */
+
+  /* 平滑滚动 + 锚点不被吸顶导航遮住 */
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+
+  /* 键盘可达性：所有可交互元素统一蓝色焦点环（鼠标点击不出现） */
+  a:focus-visible, button:focus-visible, input:focus-visible,
+  select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* 区块级纵向节奏：各 section 统一呼吸感（官网为 py-16~20，站内受导航高度取中值） */
+  .sec { padding-top: 2.25rem; padding-bottom: 2.25rem; }
+  .sec-lg { padding-top: 3rem; padding-bottom: 3rem; }
+
+  /* Hero 渐变底：对齐官网 白→淡蓝→淡紫 的起始观感 */
+  .hero-grad { background: linear-gradient(180deg, #eff6ff 0%, #eef2ff 55%, #ffffff 100%); }
+
+  /* 统计数字：大号蓝色数字 + 小号灰标签（官网 hero 统计行同款） */
+  .stat { display: flex; align-items: baseline; gap: .35rem; }
+  .stat b { font-size: 1.75rem; font-weight: 700; color: var(--brand); line-height: 1; letter-spacing: -.01em; }
+  .stat span { font-size: .75rem; color: var(--ink-4); }
+
+  /* 胶囊徽章：白底蓝字蓝边（官网 hero 徽章同款） */
+  .badge-pill {
+    display: inline-flex; align-items: center; gap: .35rem;
+    background: rgba(255, 255, 255, .8);
+    border: 1px solid var(--brand-100);
+    color: var(--brand);
+    border-radius: 9999px;
+    padding: .25rem .75rem;
+    font-size: .75rem; font-weight: 500;
+  }
+
+  /* 区块标题组：小徽章 + 大标题 + 灰副标题（官网 section header 同款） */
+  .sec-head { text-align: center; margin-bottom: 1.75rem; }
+  .sec-head .k { margin-bottom: .6rem; }
+  .sec-head h2 { font-size: 1.5rem; font-weight: 700; color: var(--ink); margin: 0 0 .5rem; letter-spacing: -.01em; }
+  .sec-head p { margin: 0; color: var(--ink-3); font-size: .9rem; }
+
+  /* 通用可点卡片：hover 抬阴影不变位（克制动效） */
+  .card-hover { transition: border-color .2s, box-shadow .2s; }
+  .card-hover:hover { border-color: rgba(37, 99, 235, .35); box-shadow: var(--shadow-hover); }
+
+  /* 尊重系统「减弱动态效果」偏好：关掉过渡与动画 */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+    }
+  }
+</style>

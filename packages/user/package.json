@@ -1,0 +1,45 @@
+{
+  "name": "cms-member",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "dev": "vite --mode dev",
+    "dev:sit": "vite --mode sit",
+    "dev:prd": "vite --mode prd",
+    "build": "vite build",
+    "build:sit": "vite build --mode dev",
+    "build:prd": "vite build --mode prd",
+    "preview": "vite preview",
+    "lint": "eslint . --fix",
+    "format": "prettier --write src/"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
+    "axios": "^1.20.0",
+    "element-plus": "^2.3.2",
+    "js-cookie": "^3.0.5",
+    "pinia": "^2.1.1",
+    "vue": "^3.3.4",
+    "vue-router": "^4.3.1"
+  },
+  "devDependencies": {
+    "@rollup/rollup-darwin-arm64": "^4.63.3",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@vitejs/plugin-legacy": "^8.2.3",
+    "@vitejs/plugin-vue": "^6.0.9",
+    "autoprefixer": "^10.6.1",
+    "dayjs": "^1.11.23",
+    "less": "^4.9.1",
+    "postcss": "^8.5.28",
+    "postcss-import": "^17.0.0",
+    "tailwindcss": "^4.3.3",
+    "unplugin-auto-import": "^21.1.0",
+    "unplugin-vue-components": "catalog:",
+    "vite": "^8.3.0",
+    "vite-plugin-vue-setup-extend": "^0.4.0"
+  }
+}

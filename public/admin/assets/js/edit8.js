@@ -1,0 +1,1 @@
+import{Cn as e,Zt as t}from"./@element-plus.js";import n from"./edit.js";var r={__name:`edit`,setup(r){return(r,i)=>(e(),t(n,{"is-page":!0}))}};export{r as default};

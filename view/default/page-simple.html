@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  {{include './common/head.html'}}
+
+  <title>{{article.title || cate.name}}-{{site.name}}</title>
+  <meta name="keywords" content="{{cate.seoKeywords || site.keywords}}">
+  <meta name="description" content="{{article.description || cate.seoDescription || site.description}}">
+  <meta property="og:title" content="{{article.title || cate.seoTitle || cate.name}}-{{site.name}}">
+  <meta property="og:description" content="{{article.description || site.description}}">
+
+  {{include './common/aigeo.html'}}
+  <link rel="canonical" href="http://{{site.domain}}{{cate.path}}/page.html">
+</head>
+<!--
+  单页正文模板（page-simple.html）：被 cms_category.articleView 指定。
+  保留 max-w-3xl 居中正文宽度便于阅读，但与其他页面共用 head/header/footer/侧栏，
+  避免出现「从页脚链接进来后无任何返回路径」的体验断裂。
+-->
+<body class="app-bg text-slate-800 min-h-screen flex flex-col">
+  {{include './common/header.html'}}
+
+  <main class="flex-1 w-full">
+    <section class="py-6">
+      <div class="container mx-auto px-4">
+        <!-- 面包屑 -->
+        <nav class="crumb mb-5 flex items-center gap-2 flex-wrap text-xs">
+          <a href="/" class="transition">首页</a>
+          <svg class="w-3 h-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          <span class="text-slate-700 font-medium">{{cate.name}}</span>
+        </nav>
+
+        <!-- 正文卡（窄列居中，方便阅读政策协议类长文） -->
+        <article class="glass mx-auto w-full max-w-3xl p-6 sm:p-8 animate-fade-in">
+          {{if article && article.content}}
+          <header class="border-b border-slate-100 pb-5 mb-8">
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-4">{{article.title || cate.name}}</h1>
+            <p class="text-xs text-slate-400 flex flex-wrap items-center gap-4">
+              {{if article.updated_at}}
+              <span class="flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                {{ dateFormat(article.updated_at, 'YYYY-MM-DD HH:mm:ss') }}
+              </span>
+              {{/if}}
+              {{if article.pv}}
+              <span class="flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                阅读（{{article.pv}}）
+              </span>
+              {{/if}}
+            </p>
+          </header>
+
+          <div class="rich-content text-slate-700 text-base leading-relaxed">
+            {{@ article.content}}
+          </div>
+          {{else}}
+          <p class="text-center py-24 text-slate-400">暂无内容</p>
+          {{/if}}
+        </article>
+      </div>
+    </section>
+  </main>
+
+  {{include './common/footer.html'}}
+
+  {{include './common/side-toolbar.html'}}
+
+  {{include './common/js.html'}}
+
+</body>
+</html>

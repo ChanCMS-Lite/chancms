@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  {{include './common/head.html'}}
+  
+<title>页面不存在 - {{site.name || 'ChanCMS'}}</title>
+
+  {{include './common/aigeo.html'}}
+    <link rel="canonical" href="http://{{site.domain}}/404.html">
+</head>
+<body class="app-bg text-slate-800 min-h-screen flex flex-col">
+  {{include './common/header.html'}}
+
+  <main class="flex-1 w-full">
+
+<section class="flex items-center justify-center py-12 md:py-16">
+  <div class="container mx-auto px-4 text-center">
+    <div class="w-28 h-28 mx-auto mb-6 rounded-full bg-primary-50 text-primary flex items-center justify-center">
+      <svg class="w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    </div>
+    <h1 class="text-7xl font-bold text-slate-200 mb-2">404</h1>
+    <p class="text-xl font-bold text-slate-800 mb-2">页面找不到了</p>
+    <p class="text-slate-500 mb-8">{{error || '您访问的页面可能已被删除或地址输入有误'}}</p>
+    <a href="/" class="btn-gradient inline-flex items-center gap-2 px-6 py-3 rounded-full">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      返回首页
+    </a>
+  </div>
+</section>
+
+  </main>
+
+  {{include './common/footer.html'}}
+
+  {{include './common/side-toolbar.html'}}
+
+  {{include './common/js.html'}}
+
+</body>
+</html>

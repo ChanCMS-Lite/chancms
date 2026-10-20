@@ -1,0 +1,1 @@
+(function(){System.register([`./@element-plus-legacy.js`,`./edit-legacy.js`],function(e,t){var n,r,i;return{setters:[function(e){n=e.Cn,r=e.Zt},function(e){i=e.default}],execute:function(){e(`default`,{__name:`edit`,setup(e){return(e,t)=>(n(),r(i,{"is-page":!0}))}})}}})})();

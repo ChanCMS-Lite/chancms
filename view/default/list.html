@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  {{include './common/head.html'}}
+  
+<title>{{cate.seoTitle || cate.name}}-{{site.name}}</title>
+<meta name="keywords" content="{{cate.seoKeywords || site.keywords}}">
+<meta name="description" content="{{cate.seoDescription || site.description}}">
+<meta property="og:title" content="{{cate.seoTitle || cate.name}}-{{site.name}}">
+<meta property="og:description" content="{{site.description}}">
+
+  {{include './common/aigeo.html'}}
+    <link rel="canonical" href="http://{{site.domain}}{{cate.path}}/index.html">
+</head>
+<body class="app-bg text-slate-800 min-h-screen flex flex-col">
+  {{include './common/header.html'}}
+
+  <main class="flex-1 w-full">
+
+<!-- 默认列表页：对齐 default/list.html 字段（articleList.list / hot / cate.children / recommend / frag.ad / tag） -->
+<section class="py-6">
+  <div class="container mx-auto px-4">
+    {{include './common/breadcrumb.html'}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- 主内容 -->
+      <div class="lg:col-span-2 space-y-4">
+
+        <div class="glass  p-5 sm:p-6">
+          {{if list && list.length}}
+          <ul class="divide-y divide-slate-100">
+            {{each list}}
+            <li class="py-5 first:pt-0 last:pb-0">
+              <div class="flex gap-4">
+                {{if $value.img}}
+                <a href="{{$value.path}}/article-{{$value.id}}.html" title="{{$value.title}}" class="w-32 sm:w-40 h-24 sm:h-28 flex-shrink-0 rounded-lg img-ph overflow-hidden">
+                  <img src="{{$value.img}}" alt="{{$value.title}}" class="w-full h-full object-cover transition duration-500" loading="lazy">
+                </a>
+                {{/if}}
+                <div class="flex-1 min-w-0">
+                  <h3 class="text-base sm:text-lg font-bold text-slate-800 mb-2">
+                    <a href="{{$value.path}}/article-{{$value.id}}.html" title="{{$value.title}}" class="hover:text-primary transition line-clamp-2">{{$value.title}}</a>
+                  </h3>
+                  <p class="text-xs text-slate-400 mb-2 flex flex-wrap items-center gap-3">
+                    <span class="flex items-center gap-1">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                      {{ dateFormat($value.created_at, 'YYYY-MM-DD') }}
+                    </span>
+                    <span class="flex items-center gap-1">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                      {{$value.author || 'admin'}}
+                    </span>
+                    <span class="flex items-center gap-1">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                      阅读（{{$value.pv || 0}}）
+                    </span>
+                  </p>
+                  <p class="text-sm text-slate-500 line-clamp-3">
+                    <a href="{{$value.path}}/article-{{$value.id}}.html" title="{{$value.title}}" class="hover:text-primary transition">
+                      {{@ $value.description}}<span class="text-primary">[详情]</span>
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </li>
+            {{/each}}
+          </ul>
+          {{else}}
+          <div class="text-center py-12">
+            <svg class="mx-auto mb-4" viewBox="0 0 64 41" width="96" height="62" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <g transform="translate(0 1)" fill="none" fill-rule="evenodd">
+                <ellipse fill="#F5F5F5" cx="32" cy="33" rx="32" ry="7"></ellipse>
+                <g fill-rule="nonzero" stroke="#D9D9D9">
+                  <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
+                  <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.93H55v12.069c0 1.253-.982 2.268-2.194 2.268H11.194C9.982 27.338 9 26.323 9 25.07V12.999h11.16c1.233 0 2.227 1.325 2.227 2.93 0 1.605 1.005 2.93 2.238 2.93h14.75c1.233 0 2.238-1.325 2.238-2.93z" fill="#FAFAFA"></path>
+                </g>
+              </g>
+            </svg>
+            <p class="text-slate-400">暂无文章</p>
+          </div>
+          {{/if}}
+        </div>
+
+        {{if pageHtml}}
+        <div class="glass  p-4 flex justify-center">
+          <div class="page-html">{{@ pageHtml}}</div>
+        </div>
+        {{/if}}
+      </div>
+
+      <!-- 侧边栏 -->
+      <aside class="space-y-4">
+        {{if hot && hot.length}}
+        <section class="glass  p-5">
+          <h3 class="card-title">{{cate.name}}</h3>
+          <ul class="space-y-2.5">
+            {{each hot}}
+            <li class="text-sm">
+              <a href="{{$value.path}}/article-{{$value.id}}.html" title="{{$value.title}}" class="text-slate-700 hover:text-primary transition line-clamp-1">{{$value.title}}</a>
+            </li>
+            {{/each}}
+          </ul>
+        </section>
+        {{/if}}
+
+        {{if cate && cate.children && cate.children.length}}
+        <section class="glass  p-5">
+          <h3 class="card-title">子栏目</h3>
+          <p class="flex flex-wrap gap-2">
+            {{each cate.children}}
+            <a class="pill px-2.5 py-1 text-xs" href="{{$value.path}}/index.html">{{$value.name}}</a>
+            {{/each}}
+          </p>
+        </section>
+        {{/if}}
+
+        {{if recommend && recommend.length}}
+        <section class="glass  p-5">
+          <h3 class="card-title">推荐图文</h3>
+          <div class="space-y-4">
+            {{each recommend}}
+            <figure class="flex gap-3 pb-3 border-b  border-slate-100 last:border-0 last:pb-0">
+              {{if $value.img}}
+              <div class="w-20 h-20 flex-shrink-0 rounded-lg img-ph overflow-hidden">
+                <img src="{{$value.img}}" alt="{{$value.title}}" class="w-full h-full object-cover" loading="lazy">
+              </div>
+              {{/if}}
+              <div class="flex-1 min-w-0">
+                <figcaption class="text-sm font-bold text-slate-800 line-clamp-2 mb-1">{{$value.title}}</figcaption>
+                <p class="text-xs text-slate-500 line-clamp-3">
+                  {{@ $value.description}}
+                  <a href="{{$value.path}}/article-{{$value.id}}.html" title="{{$value.title}}" class="text-primary hover:underline">详情</a>
+                </p>
+              </div>
+            </figure>
+            {{/each}}
+          </div>
+        </section>
+        {{/if}}
+
+        {{if frag && frag.ad}}
+        <section class="glass  p-5">
+          {{@ frag.ad.content}}
+        </section>
+        {{/if}}
+
+        {{if tag && tag.length}}
+        <section class="glass  p-5">
+          <h3 class="card-title">tag标签</h3>
+          <p class="flex flex-wrap gap-2">
+            {{each tag}}
+            <a class="pill px-2.5 py-1 text-xs" href="/tags/{{$value.path}}/tag.html">{{$value.name}}</a>
+            {{/each}}
+          </p>
+        </section>
+        {{/if}}
+      </aside>
+    </div>
+  </div>
+</section>
+
+  </main>
+
+  {{include './common/footer.html'}}
+
+  {{include './common/side-toolbar.html'}}
+
+  {{include './common/js.html'}}
+
+</body>
+</html>

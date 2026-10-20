@@ -1,0 +1,1 @@
+import{an as e,gn as t}from"./@element-plus.js";import{i as n,r}from"./vue-router.js";var i=e({name:`RedirectPage`}),a=Object.assign(i,{setup(e){let i=r(),a=n();return t(()=>{let{path:e,query:t}=i.query,n=e?decodeURIComponent(e):i.path;a.replace({path:n,query:t})}),()=>{}}});export{a as default};

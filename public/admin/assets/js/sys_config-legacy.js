@@ -1,0 +1,1 @@
+(function(){System.register([`./index-legacy.js`],function(e,t){var n,r;return{setters:[function(e){n=e.i,r=e.r}],execute:function(){e(`n`,()=>n({url:`${r.BASE_API}/cms/sysApp/views`,method:`get`})),e(`t`,()=>n({url:`${r.BASE_API}/cms/sysApp/folder`,method:`get`}))}}})})();

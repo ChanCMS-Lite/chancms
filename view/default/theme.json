@@ -1,0 +1,7 @@
+{
+  "title": "Default 默认主题",
+  "version": "1.0.0",
+  "author": "ChanCMS",
+  "description": "官方默认主题，Tailwind 风格响应式布局，含首页/列表/详情/单页/搜索全套模板。",
+  "screenshot": "static/img/cover/screenshot.svg"
+}

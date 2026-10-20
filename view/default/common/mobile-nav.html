@@ -1,0 +1,142 @@
+<!-- 移动端抽屉导航：服务端渲染 nav 数据，保证一定有内容 -->
+<div id="mobile-panel" class="fixed inset-0 z-50 hidden" aria-hidden="true">
+  <!-- 遮罩 -->
+  <div data-close="mobile-nav" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+
+  <!-- 抽屉面板 -->
+  <div id="mobile-panel-content" class="absolute left-0 top-0 bottom-0 w-72 max-w-[80vw] bg-white shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col">
+    <!-- 头部：Logo + 关闭 -->
+    <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <img src="{{site.logo || '/favicon.png'}}" alt="{{site.name}}" class="h-7 w-auto object-contain rounded">
+        <span class="font-bold text-slate-800">{{site.name}}</span>
+      </a>
+      <button type="button" data-close="mobile-nav" class="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- 搜索框：flex 布局 + 无 name 可见输入框（不触发浏览器历史填充下拉），提交时同步进 hidden input -->
+    <div class="p-3 border-b border-slate-100">
+      <form action="/search.html" method="get" data-search-form
+        class="flex items-center h-9 rounded-full pl-4 pr-1 field-flat focus-within:bg-white focus-within:ring-2 focus-within:ring-primary/30 transition">
+        <input type="text" data-search-input placeholder="搜索内容..." autocomplete="off"
+          class="flex-1 min-w-0 bg-transparent border-0 outline-none text-sm text-slate-700 placeholder-slate-400"
+          value="{{keywords || ''}}">
+        <input type="hidden" name="keyword">
+        <button type="submit" aria-label="搜索" title="搜索"
+          class="btn-gradient w-7 h-7 flex-shrink-0 flex items-center justify-center rounded-full">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+
+    <!-- 用户区：未登录显示登录/注册，已登录显示用户名+个人中心 -->
+    <div class="px-4 py-3 border-b border-slate-100">
+      <!-- 未登录 -->
+      <div id="wap-login-area" class="flex items-center gap-3 text-sm">
+        <a href="/public/member/index.html#/login" class="btn-gradient flex-1 text-center py-2">登录</a>
+        <a href="/public/member/index.html#/reg" class="btn-outline flex-1 text-center py-2">注册</a>
+      </div>
+      <!-- 已登录：字母头像 + 用户名，个人中心/退出收进下拉菜单 -->
+      <div id="wap-user-area" class="hidden items-center gap-2 text-sm relative">
+        <button type="button" id="wap-user-toggle"
+          class="flex items-center gap-2 text-sm font-medium text-slate-700 w-full"
+          aria-haspopup="true" aria-expanded="false">
+          <!-- 字母头像：同 header，移动端稍大一号 -->
+          <span id="wap-avatar" class="user-avatar !w-9 !h-9 !text-base" aria-hidden="true"></span>
+          <span id="wap-username" class="flex-1 text-left truncate"></span>
+          <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div id="wap-user-menu"
+          class="hidden absolute left-0 right-0 top-full mt-1 bg-white rounded-xl shadow-lg ring-1 ring-slate-100 py-1 z-50">
+          <a href="/public/member/index.html#/index"
+            class="nav-item flex items-center gap-2 px-3 py-2 text-sm transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            个人中心
+          </a>
+          <a href="/member/v1/logout"
+            class="nav-item flex items-center gap-2 px-3 py-2 text-sm transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            退出登录
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 导航列表：服务端渲染 -->
+    <nav class="flex-1 overflow-y-auto p-3 space-y-1">
+      {{if nav && nav.length}}
+        {{each nav}}
+          <!-- 与 header.html 同规则：纯单页栏目（type=1、无独立地址、无子栏目）不进导航 -->
+          {{if $value.status == 0 && ($value.slug == 'home' || $value.url || $value.type == 0 || ($value.children && $value.children.length))}}
+            {{if $value.slug == 'home'}}
+              <a href="/" class="nav-item block px-3 py-2.5 text-sm font-medium transition {{if cate && cate.slug == $value.slug}}is-active{{/if}}">首页</a>
+            {{else}}
+              {{if $value.url}}
+                <a href="{{$value.url}}" {{if $value.target == 1}}target="_blank" rel="noopener noreferrer"{{/if}} class="nav-item block px-3 py-2.5 text-sm font-medium transition {{if (cate && cate.slug == $value.slug) || ($value.url == '/blog.html' && isBlog)}}is-active{{/if}}">{{$value.name}}</a>
+              {{else}}
+                {{if $value.type == 0}}
+                  <a href="{{$value.path}}/index.html" class="nav-item block px-3 py-2.5 text-sm font-medium transition {{if cate && cate.slug == $value.slug}}is-active{{/if}}">{{$value.name}}</a>
+                {{else}}
+                  <a href="{{$value.path}}/page.html" class="nav-item block px-3 py-2.5 text-sm font-medium transition {{if cate && cate.slug == $value.slug}}is-active{{/if}}">{{$value.name}}</a>
+                {{/if}}
+              {{/if}}
+            {{/if}}
+          {{/if}}
+        {{/each}}
+      {{/if}}
+
+    </nav>
+  </div>
+</div>
+
+<script>
+  // 移动端抽屉用户状态检测（与 header 独立）
+  (function () {
+    function getCookie(name) {
+      return document.cookie.replace(
+        new RegExp('(?:(?:^|.*;\\s*)' + name + '\\s*\\=\\s*([^;]*).*$)|^.*$'),
+        '$1'
+      );
+    }
+    const isLoggedIn = !!getCookie('ut');
+    const un = getCookie('un');
+    const loginArea = document.getElementById('wap-login-area');
+    const userArea = document.getElementById('wap-user-area');
+    const usernameEl = document.getElementById('wap-username');
+    if (isLoggedIn) {
+      if (loginArea) loginArea.classList.add('hidden');
+      if (userArea) {
+        userArea.classList.remove('hidden');
+        userArea.classList.add('flex');
+      }
+      // 字母头像：中文取首个字符、英文取首字母大写，无名时兜底 U
+      const name = un ? decodeURIComponent(un) : '';
+      if (usernameEl && name) usernameEl.textContent = name;
+      const avatarEl = document.getElementById('wap-avatar');
+      if (avatarEl) {
+        const ch = Array.from(name)[0] || 'U';
+        avatarEl.textContent = /[a-zA-Z]/.test(ch) ? ch.toUpperCase() : ch;
+      }
+      // 用户区下拉菜单开合
+      const toggle = document.getElementById('wap-user-toggle');
+      const menu = document.getElementById('wap-user-menu');
+      if (toggle && menu) {
+        toggle.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const open = menu.classList.toggle('hidden');
+          toggle.setAttribute('aria-expanded', String(!open));
+        });
+        document.addEventListener('click', function (e) {
+          if (!menu.classList.contains('hidden') && !userArea.contains(e.target)) {
+            menu.classList.add('hidden');
+            toggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+    }
+  })();
+</script>

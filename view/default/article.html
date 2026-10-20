@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  {{include './common/head.html'}}
+  
+<title>{{article.title}}-{{site.name}}</title>
+<meta name="keywords" content="{{cate.seoKeywords || site.keywords}}">
+<meta name="description" content="{{cate.seoDescription || site.description}}">
+<meta property="og:title" content="{{article.title}}-{{cate.name}}-{{site.name}}">
+<meta property="og:description" content="{{cate.seoDescription || site.description}}">
+
+<!-- 分享海报与通用详情脚本（提前加载，避免按钮点击时函数未定义） -->
+{{include './common/share-poster.html'}}
+
+  {{include './common/aigeo.html'}}
+    <link rel="canonical" href="http://{{site.domain}}{{cate.path}}/article-{{article.id}}.html">
+</head>
+<body class="app-bg text-slate-800 min-h-screen flex flex-col">
+  {{include './common/header.html'}}
+
+  <main class="flex-1 w-full">
+
+<!-- 默认详情页：对齐 default/article.html 字段（article / pre / next / news / imgs / frag.ad / tag） -->
+<section class="py-6">
+  <div class="container mx-auto px-4">
+    {{include './common/breadcrumb.html'}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- 主内容 -->
+      <div class="lg:col-span-2 space-y-4">
+
+        <article class="glass  p-5 sm:p-6" data-article-id="{{ article.id }}" data-fav-item="{{ article.id }}" data-type="article" data-category-id="{{ cate.id || 0 }}" data-title="{{ article.title }}" data-cover="{{ article.img || article.cover || '' }}">
+          <header class="border-b border-slate-100 pb-5 mb-6">
+            <div class="mb-3">{{include './common/favorite-button.html'}}</div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-4">{{article.title}}</h1>
+            <p class="text-xs text-slate-400 flex flex-wrap items-center gap-4">
+              <span class="flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                {{ dateFormat(article.updated_at, 'YYYY-MM-DD HH:mm:ss') }}
+              </span>
+              <span class="flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                {{article.publisher || article.author || 'admin'}}
+              </span>
+              <span class="flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                阅读（{{article.pv || 0}}）
+              </span>
+            </p>
+            {{if article.tags && article.tags.length}}
+            <p class="mt-3 flex flex-wrap gap-2">
+              {{each article.tags}}
+              <a class="pill px-2.5 py-1 text-xs" href="/tags/{{$value.path}}/tag.html" title="{{$value.name}}">{{$value.name}}</a>
+              {{/each}}
+            </p>
+            {{/if}}
+          </header>
+
+          {{if article.description}}
+          <section class="glass-soft p-4 mb-6 text-sm text-slate-600 leading-relaxed">
+            <span class="font-bold text-slate-700">「导读」</span>{{@ article.description}}
+          </section>
+          {{/if}}
+
+          <div id="articleBody" data-share-body class="rich-content text-slate-700 text-base leading-relaxed">
+            {{@ article.content}}
+          </div>
+
+          <div class="mt-8 pt-6 border-t border-slate-100">
+            {{set title = article.title}}
+            {{include './common/share-bar.html'}}
+          </div>
+        </article>
+
+        <!-- 上一篇/下一篇 -->
+        <nav class="glass  p-5 space-y-3 text-sm">
+          <p class="flex items-center gap-2">
+            <span class="text-slate-400 flex-shrink-0">上一篇：</span>
+            {{if pre}}
+            <a href="{{pre.path}}/article-{{pre.id}}.html" class="text-slate-600 hover:text-primary transition line-clamp-1">{{pre.title}}</a>
+            {{else}}
+            <span class="text-slate-400">真的没有了</span>
+            {{/if}}
+          </p>
+          <p class="flex items-center gap-2">
+            <span class="text-slate-400 flex-shrink-0">下一篇：</span>
+            {{if next}}
+            <a href="{{next.path}}/article-{{next.id}}.html" class="text-slate-600 hover:text-primary transition line-clamp-1">{{next.title}}</a>
+            {{else}}
+            <span class="text-slate-400">真的没有了</span>
+            {{/if}}
+          </p>
+        </nav>
+
+        <!-- 评论区 -->
+        <section class="glass  p-5 sm:p-6">
+          {{include './common/comment-section.html'}}
+        </section>
+      </div>
+
+      <!-- 侧边栏 -->
+      <aside class="space-y-4">
+        {{if news && news.length}}
+        <section class="glass  p-5">
+          <h3 class="card-title">
+            {{cate.name}}最新文章
+            <a href="{{cate.path}}/index.html" class="card-more">更多</a>
+          </h3>
+          <ul class="space-y-2.5">
+            {{each news}}
+            <li class="text-sm">
+              <a href="{{$value.path}}/article-{{$value.id}}.html" title="{{$value.title}}" class="text-slate-700 hover:text-primary transition line-clamp-1">{{$value.title}}</a>
+            </li>
+            {{/each}}
+          </ul>
+        </section>
+        {{/if}}
+
+        {{if imgs && imgs.length}}
+        <section class="glass  p-5">
+          <h3 class="card-title">{{cate.name}}推荐图文</h3>
+          <div class="space-y-4">
+            {{each imgs}}
+            <figure class="flex gap-3 pb-3 border-b  border-slate-100 last:border-0 last:pb-0">
+              {{if $value.img}}
+              <div class="w-20 h-20 flex-shrink-0 rounded-lg img-ph overflow-hidden">
+                <img src="{{$value.img}}" alt="{{$value.title}}" class="w-full h-full object-cover" loading="lazy">
+              </div>
+              {{/if}}
+              <div class="flex-1 min-w-0">
+                <figcaption class="text-sm font-bold text-slate-800 line-clamp-2 mb-1">{{$value.title}}</figcaption>
+                <p class="text-xs text-slate-500 line-clamp-3">
+                  {{@ $value.description}}
+                  <a href="{{$value.path}}/article-{{$value.id}}.html" title="{{$value.title}}" class="text-primary hover:underline">详情</a>
+                </p>
+              </div>
+            </figure>
+            {{/each}}
+          </div>
+        </section>
+        {{/if}}
+
+        {{if frag && frag.ad}}
+        <section class="glass  p-5">
+          {{@ frag.ad.content}}
+        </section>
+        {{/if}}
+
+        {{if tag && tag.length}}
+        <section class="glass  p-5">
+          <h3 class="card-title">tag标签</h3>
+          <p class="flex flex-wrap gap-2">
+            {{each tag}}
+            <a class="pill px-2.5 py-1 text-xs" href="/tags/{{$value.path}}/tag.html">{{$value.name}}</a>
+            {{/each}}
+          </p>
+        </section>
+        {{/if}}
+      </aside>
+    </div>
+  </div>
+</section>
+
+  </main>
+
+  {{include './common/footer.html'}}
+
+  {{include './common/side-toolbar.html'}}
+
+  {{include './common/js.html'}}
+
+<script>
+  // 当前页面海报数据（detail-common.js 的 openPosterPreview() 无参时读取）
+  window.__posterData = {
+    title:    '{{article.title}}',
+    summary:  '{{@ article.description || ""}}',
+    cover:    '{{article.img || article.cover || ""}}',
+    subTitle: '{{site.name}}'
+  };
+</script>
+
+</body>
+</html>

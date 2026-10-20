@@ -1,0 +1,1 @@
+import{i as e,r as t}from"./index.js";var n=(n,r,i=``)=>e({url:`${t.BASE_API}/member/v1/comment/list`,method:`get`,params:{page:n,pageSize:r,status:i}}),r=n=>e({url:`${t.BASE_API}/member/v1/comment/audit`,method:`post`,data:n}),i=n=>e({url:`${t.BASE_API}/member/v1/comment/delete`,method:`post`,data:{id:n}});export{i as n,n as r,r as t};

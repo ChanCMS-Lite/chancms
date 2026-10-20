@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  {{include './common/head.html'}}
+
+<title>{{cate.name || '图集'}}-{{site.name}}</title>
+<meta name="keywords" content="{{cate.seoKeywords || site.keywords}}">
+<meta name="description" content="{{cate.seoDescription || site.description}}">
+<meta property="og:title" content="{{cate.name || '图集'}}-{{site.name}}">
+<meta property="og:description" content="{{site.description}}">
+
+  {{include './common/aigeo.html'}}
+    <link rel="canonical" href="http://{{site.domain}}{{cate.path}}/index.html">
+</head>
+<body class="app-bg text-slate-800 min-h-screen flex flex-col">
+  {{include './common/header.html'}}
+
+  <main class="flex-1 w-full">
+
+<section class="py-6">
+  <div class="container mx-auto px-4">
+    {{include './common/breadcrumb.html'}}
+
+    <!-- 频道标题区 + 真实子栏目筛选 chips -->
+    <div class="glass mb-6">
+      <div class="px-6 py-5 border-b border-slate-100">
+        <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+          <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          {{cate.name || '图集频道'}}
+        </h1>
+        <p class="text-sm text-slate-500 mt-1">{{cate.seoDescription || '用镜头记录世界，以影像传递力量'}}</p>
+      </div>
+      <div class="px-6 py-4">
+        <div class="flex flex-wrap gap-2">
+          <a href="{{cate.path}}/index.html" class="btn-gradient px-4 py-1.5 text-sm transition">全部</a>
+          {{if cate.children && cate.children.length}}
+          {{each cate.children}}
+          <a href="{{$value.path}}/index.html" class="pill px-4 py-1.5 text-sm transition">{{$value.name}}</a>
+          {{/each}}
+          {{/if}}
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <!-- 左侧主内容：统一图集网格 + 分页 -->
+      <div class="lg:col-span-9">
+        {{if list && list.length}}
+        <div class="glass p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="card-title mb-0">全部图集</h2>
+            <span class="text-xs text-slate-400">共 {{page.total || list.length}} 组</span>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {{each list}}
+            <!-- 图集卡：封面（图集首图/栏目封面/默认图）+ 张数角标 + 浏览数 -->
+            {{set cover = $value.img || ($value.ext_data && $value.ext_data.pics && $value.ext_data.pics[0] && $value.ext_data.pics[0].url) || '/public/cover/default-pic.jpg'}}
+            {{set picCount = ($value.ext_data && $value.ext_data.pics && $value.ext_data.pics.length) || 0}}
+            <a href="{{$value.path}}/article-{{$value.id}}.html" class="card-solid group block overflow-hidden">
+              <div class="relative aspect-[4/3] img-ph overflow-hidden">
+                <img loading="lazy" referrerpolicy="no-referrer"
+                  src="{{cover}}"
+                  alt="{{$value.title}}" class="w-full h-full object-cover transition duration-300">
+                {{if picCount > 1}}
+                <div class="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  {{picCount}} 张
+                </div>
+                {{/if}}
+              </div>
+              <div class="p-3">
+                <h3 class="font-medium text-slate-800 group-hover:text-primary line-clamp-1 transition text-sm">{{$value.shortTitle || $value.title}}</h3>
+                <p class="text-xs text-slate-400 mt-1 flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                  </svg>
+                  {{$value.pv || 0}} 浏览
+                </p>
+              </div>
+            </a>
+            {{/each}}
+          </div>
+
+          <!-- 分页 -->
+          {{if pageHtml}}
+          <div class="flex justify-center items-center gap-2 pt-6 mt-6 border-t border-slate-100">
+            {{@ pageHtml}}
+          </div>
+          {{/if}}
+        </div>
+        {{else}}
+        <div class="glass p-16 text-center">
+          <svg class="mx-auto mb-4" viewBox="0 0 64 41" width="96" height="62" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <g transform="translate(0 1)" fill="none" fill-rule="evenodd">
+              <ellipse fill="#F5F5F5" cx="32" cy="33" rx="32" ry="7"></ellipse>
+              <g fill-rule="nonzero" stroke="#D9D9D9">
+                <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
+                <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.93H55v12.069c0 1.253-.982 2.268-2.194 2.268H11.194C9.982 27.338 9 26.323 9 25.07V12.999h11.16c1.233 0 2.227 1.325 2.227 2.93 0 1.605 1.005 2.93 2.238 2.93h14.75c1.233 0 2.238-1.325 2.238-2.93z" fill="#FAFAFA"></path>
+              </g>
+            </g>
+          </svg>
+          <p class="text-slate-400">暂无图片</p>
+        </div>
+        {{/if}}
+      </div>
+
+      <!-- 右侧边栏 -->
+      <aside class="lg:col-span-3 space-y-4">
+        <!-- 热门图集 -->
+        <div class="glass overflow-hidden">
+          <div class="px-4 py-3 border-b border-slate-100">
+            <h3 class="card-title mb-0">热门图集</h3>
+          </div>
+          <div class="p-4 space-y-4">
+            {{if hot && hot.length > 0}}
+            {{each hot}}
+            {{if $index < 3}}
+            {{set hcover = $value.img || ($value.ext_data && $value.ext_data.pics && $value.ext_data.pics[0] && $value.ext_data.pics[0].url) || '/public/cover/default-pic.jpg'}}
+            <a href="{{$value.path}}/article-{{$value.id}}.html" class="flex gap-3 group">
+              <div class="w-20 h-14 rounded-lg img-ph overflow-hidden flex-shrink-0">
+                <img loading="lazy" referrerpolicy="no-referrer"
+                  src="{{hcover}}"
+                  alt="{{$value.title}}" class="w-full h-full object-cover transition">
+              </div>
+              <div class="flex-1">
+                <div class="text-sm text-slate-700 group-hover:text-primary line-clamp-2 transition">{{$value.shortTitle || $value.title}}</div>
+                <div class="text-xs text-slate-400 mt-1">{{$value.pv || 0}} 浏览</div>
+              </div>
+            </a>
+            {{/if}}
+            {{/each}}
+            {{/if}}
+          </div>
+        </div>
+
+        {{if tag && tag.length}}
+        <section class="glass p-5">
+          <h3 class="card-title">热门标签</h3>
+          <p class="flex flex-wrap gap-2">
+            {{each tag}}
+            <a class="pill px-2.5 py-1 text-xs" href="/tags/{{$value.path}}/tag.html">{{$value.name}}</a>
+            {{/each}}
+          </p>
+        </section>
+        {{/if}}
+      </aside>
+    </div>
+  </div>
+</section>
+
+  </main>
+
+  {{include './common/footer.html'}}
+
+  {{include './common/side-toolbar.html'}}
+
+  {{include './common/js.html'}}
+
+</body>
+</html>

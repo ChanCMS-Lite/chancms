@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  {{include './common/head.html'}}
+
+<title>{{if keywords}}{{keywords}} - {{/if}}{{site.name}}</title>
+<meta name="keywords" content="{{site.keywords}}">
+<meta name="description" content="{{site.description}}">
+<meta property="og:title" content="{{site.title}}">
+<meta property="og:description" content="{{site.description}}">
+
+  {{include './common/aigeo.html'}}
+    <link rel="canonical" href="http://{{site.domain}}/search.html">
+</head>
+<body class="app-bg text-slate-800 min-h-screen flex flex-col">
+  {{include './common/header.html'}}
+
+  <main class="flex-1 w-full">
+
+<!-- 搜索页：搜索框 + 分类过滤 chips（全部/动态栏目）+ 主区结果 -->
+<!-- 字段：keywords / cid / type / search.list / pageHtml / frag.ad -->
+<section class="py-6">
+  <div class="container mx-auto px-4">
+
+    <!-- 搜索头：搜索框 + 结果数 + 分类过滤 chips -->
+    <div class="glass mb-6">
+      <div class="px-5 sm:px-6 py-5 border-b border-slate-100">
+        <form action="/search.html" method="get" data-search-form class="flex gap-2.5" role="search">
+          <div class="relative flex-1">
+            <svg class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <!-- 可见输入框无 name：不触发浏览器历史填充下拉，提交时由 header 通用脚本同步进 hidden input；
+                 field-flat 与 header 搜索框同款；data-clearable 复用 common.js#initClearableFields 清空体系 -->
+            <input type="text" data-search-input data-clearable data-reset-url="/search.html" value="{{keywords}}" maxlength="10" placeholder="搜索文章、图片、视频…" autocomplete="off" class="field-flat field-clearable w-full h-10 rounded-full pl-10 pr-10 text-sm text-slate-700">
+            <button type="button" class="field-clear" aria-label="清空搜索词">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <input type="hidden" name="keyword">
+          <button type="submit" class="btn-gradient h-10 px-6 text-sm rounded-full flex-shrink-0">搜索</button>
+        </form>
+        {{if !keywords}}
+        <p class="text-xs text-slate-400 mt-3">输入关键词，搜索全站文章、图片、视频</p>
+        {{else}}
+        <p class="text-xs text-slate-400 mt-3">
+          共找到 <span class="text-primary font-medium">{{search.total || 0}}</span> 条与「<span class="text-slate-600">{{keywords}}</span>」相关的内容
+        </p>
+        {{/if}}
+      </div>
+      <!-- 分类过滤 chips：全部 / 内容栏目（nav 动态） -->
+      <div class="px-5 sm:px-6 py-4 flex flex-wrap gap-2">
+        <a href="/search.html?keyword={{keywords}}" class="{{if !cid && !type}}btn-gradient{{else}}pill{{/if}} px-4 py-1.5 text-sm transition">全部</a>
+        {{each nav}}
+        {{if $value.type == 0 && $value.slug != 'home'}}
+        <a href="/search.html?keyword={{keywords}}&cid={{$value.id}}" class="{{if cid == $value.id && !type}}btn-gradient{{else}}pill{{/if}} px-4 py-1.5 text-sm transition">{{$value.name}}</a>
+        {{/if}}
+        {{/each}}
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- 主内容 -->
+      <div class="{{if frag && frag.ad}}lg:col-span-2{{else}}lg:col-span-3{{/if}} space-y-4">
+
+        <!-- ============ 全部 / 按栏目过滤：文章类结果 ============ -->
+
+        <!-- 文章类结果列表 -->
+        <div class="glass p-5 sm:p-6">
+          {{if search && search.list && search.list.length}}
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="card-title mb-0">内容结果</h2>
+            <span class="text-xs text-slate-400">共 {{search.total}} 条</span>
+          </div>
+          <ul class="divide-y divide-slate-100">
+            {{each search.list}}
+            <li class="py-5 first:pt-2 last:pb-0">
+              <div class="flex gap-4">
+                {{if $value.img}}
+                <a href="{{$value.path}}/article-{{$value.id}}.html" title="{{$value.title}}" class="w-32 sm:w-40 h-24 sm:h-28 flex-shrink-0 rounded-lg img-ph overflow-hidden">
+                  <img src="{{$value.img}}" alt="{{$value.title}}" class="w-full h-full object-cover transition duration-500" loading="lazy">
+                </a>
+                {{/if}}
+                <div class="flex-1 min-w-0">
+                  <h3 class="text-base sm:text-lg font-bold text-slate-800 mb-2">
+                    <a href="{{$value.path}}/article-{{$value.id}}.html" title="{{$value.title}}" class="hover:text-primary transition line-clamp-2">{{@ $value.titles}}</a>
+                  </h3>
+                  <p class="text-xs text-slate-400 mb-2 flex flex-wrap items-center gap-3">
+                    <span class="pill px-2 py-0.5 text-xs">{{$value.name || '内容'}}</span>
+                    <span class="flex items-center gap-1">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                      {{ dateFormat($value.created_at, 'YYYY-MM-DD') }}
+                    </span>
+                    <span class="flex items-center gap-1">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                      阅读（{{$value.pv || 0}}）
+                    </span>
+                  </p>
+                  <p class="text-sm text-slate-500 line-clamp-2">
+                    <a href="{{$value.path}}/article-{{$value.id}}.html" title="{{$value.title}}" class="hover:text-primary transition">
+                      {{@ $value.description}}
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </li>
+            {{/each}}
+          </ul>
+          {{else}}
+          <div class="text-center py-12">
+            <svg class="mx-auto mb-4" viewBox="0 0 64 41" width="96" height="62" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <g transform="translate(0 1)" fill="none" fill-rule="evenodd">
+                <ellipse fill="#F5F5F5" cx="32" cy="33" rx="32" ry="7"></ellipse>
+                <g fill-rule="nonzero" stroke="#D9D9D9">
+                  <path d="M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z"></path>
+                  <path d="M41.613 15.931c0-1.605.994-2.93 2.227-2.93H55v12.069c0 1.253-.982 2.268-2.194 2.268H11.194C9.982 27.338 9 26.323 9 25.07V12.999h11.16c1.233 0 2.227 1.325 2.227 2.93 0 1.605 1.005 2.93 2.238 2.93h14.75c1.233 0 2.238-1.325 2.238-2.93z" fill="#FAFAFA"></path>
+                </g>
+              </g>
+            </svg>
+            {{if !keywords}}
+            <!-- 空关键词：引导开始搜索，而不是「未找到」 -->
+            <p class="text-slate-500 font-medium">想找点什么？</p>
+            <p class="text-xs text-slate-400 mt-2">在上方输入关键词，或点击分类筛选浏览内容</p>
+            <a href="/" class="pill px-4 py-1.5 text-xs mt-4 inline-block">先去首页逛逛</a>
+            {{else}}
+            <p class="text-slate-400">未找到与「{{keywords}}」相关的内容</p>
+            {{if !cid}}
+            <p class="text-xs text-slate-400 mt-2">试试更换关键词，或使用更短的核心词搜索</p>
+            {{/if}}
+            {{/if}}
+          </div>
+          {{/if}}
+        </div>
+
+        <!-- 文章分页 -->
+        {{if pageHtml}}
+        <div class="glass p-4 flex justify-center">
+          <div class="page-html">{{@ pageHtml}}</div>
+        </div>
+        {{/if}}
+      </div>
+
+      <!-- 侧边栏（仅广告：tag 区已移除） -->
+      <aside class="space-y-4">
+        {{if frag && frag.ad}}
+        <section class="glass p-5">
+          {{@ frag.ad.content}}
+        </section>
+        {{/if}}
+      </aside>
+    </div>
+  </div>
+</section>
+
+  </main>
+
+  {{include './common/footer.html'}}
+
+  {{include './common/side-toolbar.html'}}
+
+  {{include './common/js.html'}}
+
+</body>
+</html>

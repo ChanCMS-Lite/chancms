@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  {{include './common/head.html'}}
+  
+<title>{{cate.name || '单页'}}-{{site.name}}</title>
+<meta name="keywords" content="{{cate.seoKeywords || site.keywords}}">
+<meta name="description" content="{{cate.seoDescription || site.description}}">
+<meta property="og:title" content="{{cate.seoTitle || cate.name}}-{{site.name}}">
+<meta property="og:description" content="{{site.description}}">
+
+  {{include './common/aigeo.html'}}
+    <link rel="canonical" href="http://{{site.domain}}{{cate.path}}/page.html">
+</head>
+<body class="app-bg text-slate-800 min-h-screen flex flex-col">
+  {{include './common/header.html'}}
+
+  <main class="flex-1 w-full">
+
+<!-- 单页列表页：列出当前栏目下的所有单页条目，点击进入 page-detail.html 详情 -->
+<section class="py-6">
+  <div class="container mx-auto px-4">
+    {{include './common/breadcrumb.html'}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- 主内容（右）：单页列表 -->
+      <div class="lg:col-span-2 lg:order-2 order-1">
+
+        <div class="glass p-5 sm:p-6">
+          <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-6">{{cate.name}}</h1>
+
+          {{if page && page.list && page.list.length}}
+          <ul class="divide-y divide-slate-100">
+            {{each page.list}}
+            <li>
+              <a href="{{$value.path}}/page-{{$value.id}}.html" class="flex gap-4 py-4 group">
+                {{if $value.img}}
+                <img src="{{$value.img}}" alt="{{$value.title}}" class="w-28 h-20 object-cover rounded-lg flex-shrink-0 transition duration-300" loading="lazy">
+                {{/if}}
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-medium text-slate-900 group-hover:text-primary transition">{{$value.title}}</h3>
+                  {{if $value.description}}
+                  <p class="text-sm text-slate-500 mt-1 line-clamp-2">{{$value.description}}</p>
+                  {{/if}}
+                </div>
+                <svg class="w-5 h-5 text-slate-300 group-hover:text-primary self-center flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+              </a>
+            </li>
+            {{/each}}
+          </ul>
+          {{else}}
+          <p class="text-center py-12 text-slate-400">暂无内容</p>
+          {{/if}}
+        </div>
+      </div>
+
+      <!-- 侧边栏（左） -->
+      <aside class="space-y-4 lg:order-1 order-2">
+        <!-- tag 标签 -->
+        {{if tag && tag.length}}
+        <section class="glass p-5">
+          <h3 class="card-title">tag标签</h3>
+          <p class="flex flex-wrap gap-2">
+            {{each tag}}
+            <a class="pill px-2.5 py-1 text-xs" href="/tags/{{$value.path}}/tag.html">{{$value.name}}</a>
+            {{/each}}
+          </p>
+        </section>
+        {{/if}}
+
+        <!-- 广告 -->
+        {{if frag && frag.ad}}
+        <section class="glass p-5">
+          {{@ frag.ad.content}}
+        </section>
+        {{/if}}
+
+        <!-- 章节目录：子栏目 + 文章列表（对齐 book 章节导航体验） -->
+        <!-- 当前栏目无内容时回退显示父级章节，避免子栏目单页左侧空白 -->
+        {{set chapters = (page && ((page.children && page.children.length) || (page.list && page.list.length))) ? page : (page && page.parentPage ? page.parentPage : null)}}
+        {{if chapters && ((chapters.children && chapters.children.length) || (chapters.list && chapters.list.length))}}
+        <section class="glass p-5 lg:sticky lg:top-20">
+          <h3 class="card-title">章节目录</h3>
+          <ul class="space-y-1">
+            {{each chapters.children}}
+            <li class="text-sm font-medium">
+              {{if $value.url}}<a href="{{$value.url}}" {{if $value.target == 1}}target="_blank" rel="noopener noreferrer"{{/if}} title="{{$value.name}}" class="nav-item block px-2 py-1.5 transition">{{$value.name}}</a>{{else}}<a href="{{$value.path}}/page.html" title="{{$value.name}}" class="nav-item block px-2 py-1.5 transition {{if cate && cate.id == $value.id}}is-active{{/if}}">{{$value.name}}</a>{{/if}}
+            </li>
+            {{/each}}
+            {{each chapters.list}}
+            <li class="text-sm font-medium">
+              <a href="{{$value.path}}/page-{{$value.id}}.html" title="{{$value.title}}" class="nav-item block px-2 py-1.5 transition {{if article && article.id == $value.id}}is-active{{/if}}">{{$value.title}}</a>
+            </li>
+            {{/each}}
+          </ul>
+        </section>
+        {{/if}}
+      </aside>
+    </div>
+  </div>
+</section>
+
+  </main>
+
+  {{include './common/footer.html'}}
+
+  {{include './common/side-toolbar.html'}}
+
+  {{include './common/js.html'}}
+
+</body>
+</html>
